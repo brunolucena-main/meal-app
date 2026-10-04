@@ -33,7 +33,7 @@ function Section({
 }
 
 function Panel({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <div className={`rounded-3xl bg-card p-5 md:p-6 ${className}`}>{children}</div>
+  return <div className={`surface rounded-3xl p-5 md:p-6 ${className}`}>{children}</div>
 }
 
 // Example day used to show the target bars. Not real data.
@@ -67,15 +67,17 @@ export default function DesignPage() {
             <Swatch name="Muted text" token="muted-foreground" />
             <Swatch name="Teal" token="primary" note="Actions, focus" />
             <Swatch name="Track" token="track" note="Empty part of bars" />
+            <Swatch name="Teal tint" token="accent" note="Selected items, highlights" />
           </Panel>
           <Panel className="grid content-start gap-4">
             <h3 className="text-sm font-bold text-muted-foreground">Comparison series</h3>
-            <Swatch name="Food 1" token="series-1" />
-            <Swatch name="Food 2" token="series-2" />
-            <Swatch name="Food 3" token="series-3" />
-            <Swatch name="Food 4" token="series-4" />
+            <Swatch name="Food 1" token="series-1" tint="tint-1" />
+            <Swatch name="Food 2" token="series-2" tint="tint-2" />
+            <Swatch name="Food 3" token="series-3" tint="tint-3" />
+            <Swatch name="Food 4" token="series-4" tint="tint-4" />
             <p className="text-xs text-muted-foreground">
-              Up to four foods side by side. Each also has a darker &ldquo;ink&rdquo; shade for text on white.
+              Up to four foods side by side. Each has a soft tint for tiles and a darker &ldquo;ink&rdquo; shade for
+              text.
             </p>
           </Panel>
           <Panel className="grid content-start gap-4">
@@ -140,16 +142,16 @@ export default function DesignPage() {
             <span className="text-sm font-bold">Compare by</span>
             <Tabs defaultValue="100g">
               <TabsList className="h-10 rounded-full bg-track p-1">
-                <TabsTrigger value="100g" className="rounded-full px-4">
+                <TabsTrigger value="100g" className="rounded-full px-4 text-muted-foreground data-active:text-foreground">
                   Per 100 g
                 </TabsTrigger>
-                <TabsTrigger value="100kcal" className="rounded-full px-4">
+                <TabsTrigger value="100kcal" className="rounded-full px-4 text-muted-foreground data-active:text-foreground">
                   Per 100 kcal
                 </TabsTrigger>
-                <TabsTrigger value="serving" className="rounded-full px-4">
+                <TabsTrigger value="serving" className="rounded-full px-4 text-muted-foreground data-active:text-foreground">
                   Per serving
                 </TabsTrigger>
-                <TabsTrigger value="target" className="rounded-full px-4">
+                <TabsTrigger value="target" className="rounded-full px-4 text-muted-foreground data-active:text-foreground">
                   % of my targets
                 </TabsTrigger>
               </TabsList>
@@ -164,9 +166,9 @@ export default function DesignPage() {
         description="Thick bars with a plain-language status. Example day, not real data."
       >
         <div className="grid gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
-          <Panel className="grid content-start gap-4">
+          <div className="grid content-start gap-4 rounded-3xl bg-tint-1 p-5 md:p-6">
             <div className="grid gap-1">
-              <span className="text-xs font-bold tracking-[0.12em] text-muted-foreground uppercase">Today</span>
+              <span className="text-xs font-bold tracking-[0.12em] text-accent-foreground uppercase">Today</span>
               <span className="tabular text-[40px] leading-none font-extrabold">
                 1,640 <span className="text-base font-semibold text-muted-foreground">of 2,200 kcal</span>
               </span>
@@ -177,14 +179,14 @@ export default function DesignPage() {
               aria-valuenow={75}
               aria-valuemin={0}
               aria-valuemax={100}
-              className="h-4 overflow-hidden rounded-full bg-track"
+              className="h-4 overflow-hidden rounded-full bg-card"
             >
               <div className="h-full w-3/4 rounded-full bg-primary" />
             </div>
             <p className="text-sm font-bold">
               560 kcal left <span className="font-medium text-muted-foreground">· dinner planned: 610 kcal</span>
             </p>
-          </Panel>
+          </div>
           <Panel className="grid gap-5 sm:grid-cols-2">
             <TargetBar
               label="Protein"

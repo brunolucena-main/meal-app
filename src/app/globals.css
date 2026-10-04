@@ -50,6 +50,10 @@
   --color-series-2-ink: var(--series-2-ink);
   --color-series-3-ink: var(--series-3-ink);
   --color-series-4-ink: var(--series-4-ink);
+  --color-tint-1: var(--tint-1);
+  --color-tint-2: var(--tint-2);
+  --color-tint-3: var(--tint-3);
+  --color-tint-4: var(--tint-4);
 
   /* Target status */
   --color-good: var(--good);
@@ -87,41 +91,46 @@
 :root {
   --radius: 0.75rem;
 
-  --background: #eef1f6;
-  --foreground: #1b1f2a;
+  --background: #f5f9f8;
+  --foreground: #141821;
   --card: #ffffff;
-  --card-foreground: #1b1f2a;
+  --card-foreground: #141821;
+  --card-shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 6px 20px -6px rgb(16 24 40 / 0.1);
   --popover: #ffffff;
-  --popover-foreground: #1b1f2a;
-  --primary: #0a7a6a;
+  --popover-foreground: #141821;
+  --primary: #00806f;
   --primary-foreground: #ffffff;
-  --secondary: #e3e7ef;
-  --secondary-foreground: #1b1f2a;
-  --muted: #e9edf3;
-  --muted-foreground: #5b6477;
-  --accent: #e6f4f1;
-  --accent-foreground: #0a5c50;
-  --destructive: #c8372a;
-  --border: #dde2ea;
-  --input: #d3d9e3;
-  --ring: #0e9f8a;
-  --track: #e3e7ef;
+  --secondary: #e4ebf0;
+  --secondary-foreground: #141821;
+  --muted: #eef3f5;
+  --muted-foreground: #4f586b;
+  --accent: #d9f4ee;
+  --accent-foreground: #005c50;
+  --destructive: #d12f1f;
+  --border: #e1e7ec;
+  --input: #cfd8e0;
+  --ring: #00a08a;
+  --track: #e6ecf1;
 
-  --series-1: #0e9f8a;
-  --series-2: #e8573a;
-  --series-3: #5b6cf0;
-  --series-4: #d99a00;
-  --series-1-ink: #0a7a6a;
-  --series-2-ink: #be3f25;
-  --series-3-ink: #4352d6;
-  --series-4-ink: #8f6500;
+  --series-1: #00a08a;
+  --series-2: #f04e2f;
+  --series-3: #4f5bff;
+  --series-4: #c98500;
+  --series-1-ink: #00806f;
+  --series-2-ink: #c23a1f;
+  --series-3-ink: #3a45e0;
+  --series-4-ink: #8a5b00;
+  --tint-1: #d9f4ee;
+  --tint-2: #ffe3db;
+  --tint-3: #e2e4ff;
+  --tint-4: #fdeec9;
 
-  --good: #1f8f52;
-  --good-soft: #def3e6;
-  --warn: #b26b00;
-  --warn-soft: #fbedd3;
-  --bad: #c8372a;
-  --bad-soft: #fbe2df;
+  --good: #11804a;
+  --good-soft: #d8f3e3;
+  --warn: #b45f00;
+  --warn-soft: #fdebcc;
+  --bad: #d12f1f;
+  --bad-soft: #ffe0db;
 
   --leaf: #2c7a2e;
   --leaf-container: #cbefc4;
@@ -144,6 +153,7 @@
   --foreground: #edf0f6;
   --card: #181c27;
   --card-foreground: #edf0f6;
+  --card-shadow: none;
   --popover: #1d2230;
   --popover-foreground: #edf0f6;
   --primary: #34cdb6;
@@ -168,6 +178,10 @@
   --series-2-ink: #ff8467;
   --series-3-ink: #a5aeff;
   --series-4-ink: #f2c14e;
+  --tint-1: #133630;
+  --tint-2: #3d1f18;
+  --tint-3: #23264d;
+  --tint-4: #3a2e10;
 
   --good: #5fd08f;
   --good-soft: #163324;
@@ -213,6 +227,13 @@
 }
 
 @layer utilities {
+  /* White card that stands off the light ground; flat with a border in dark mode. */
+  .surface {
+    background: var(--card);
+    color: var(--card-foreground);
+    border: 1px solid var(--border);
+    box-shadow: var(--card-shadow);
+  }
   .tabular {
     font-variant-numeric: tabular-nums;
   }

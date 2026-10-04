@@ -39,8 +39,8 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       aria-current={active ? "page" : undefined}
       className={cn(
         base,
-        "transition-colors hover:bg-card focus-visible:outline-2 focus-visible:outline-ring",
-        active && "bg-card text-foreground shadow-[0_1px_2px_rgb(0_0_0/0.06)]"
+        "transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring",
+        active && "bg-accent text-accent-foreground hover:bg-accent"
       )}
     >
       {content}
@@ -54,7 +54,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-6 border-b border-border px-4 py-5 md:sticky md:top-0 md:h-dvh md:w-60 md:border-r md:border-b-0">
+      <aside className="flex shrink-0 flex-col gap-6 border-b border-border bg-card px-4 py-5 md:sticky md:top-0 md:h-dvh md:w-60 md:border-r md:border-b-0">
         <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
           <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
           Meal App

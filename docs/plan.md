@@ -22,3 +22,5 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 ### Session 1
 - Chunk 1: Next.js 16 + Tailwind v4 + shadcn/ui (Base UI) scaffold, git, Calm Coach tokens
   (light + dark), fonts, app shell with sidebar, `/design` style guide part 1.
+- Revision: lighter, livelier light theme (teal-tinted near-white ground, more saturated
+  series colors, soft tints, white cards with shadow, darker text).
