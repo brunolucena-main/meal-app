@@ -23,6 +23,18 @@ npm run dev
 
 Then open http://localhost:3000.
 
+### Open it like an app (Windows)
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts\install-shortcuts.ps1
+```
+
+This adds **Meal App** and **Stop Meal App** to the desktop and the Start menu. Meal App starts
+the server in a minimized "Meal App server" window and opens the app in its own Edge window
+(http://localhost:3001). The first start after a code change builds the app, which takes about a
+minute; later starts are instant. To stop it, use **Stop Meal App** or close the server window.
+It uses the same database as `npm run dev`, which runs separately on port 3000.
+
 ### First-time data setup
 
 The food and flavor data are downloaded once and imported into `data/meal-app.db` (git-ignored).

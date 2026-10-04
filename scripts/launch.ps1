@@ -4,7 +4,7 @@
 #   - Runs the server in a minimized "Meal App server" window; close that window to stop it.
 #   - If the app is already running, just opens another window.
 #
-# Used by "Meal App.cmd" and the desktop / Start menu shortcuts (scripts/install-shortcuts.ps1).
+# Used by the desktop / Start menu shortcuts (scripts/install-shortcuts.ps1).
 param(
   [int]$Port = 3001,
   # For testing: start the server but don't open a window.
@@ -29,9 +29,9 @@ function Fail($message) {
 }
 
 if (-not (Test-Running)) {
-  # Rebuild when the code changed since the last build.
+  # Rebuild when the app code changed since the last build (docs-only commits don't count).
   $stamp = Join-Path $root ".next\launcher-build.txt"
-  $head = (git -C $root rev-parse HEAD 2>$null)
+  $head = (git -C $root log -1 --format=%H -- src public drizzle package.json package-lock.json next.config.ts tsconfig.json postcss.config.mjs 2>$null)
   $built = if (Test-Path $stamp) { (Get-Content $stamp -Raw).Trim() } else { "" }
   if (-not (Test-Path (Join-Path $root ".next\BUILD_ID")) -or $built -ne $head) {
     Write-Host "Preparing Meal App. The first start after an update takes about a minute..." -ForegroundColor Cyan

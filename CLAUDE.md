@@ -9,6 +9,8 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 - `npm run dev`: app at http://localhost:3000
 - `npm run data:import`: rebuild USDA tables in `data/meal-app.db` (see `docs/data.md`)
 - `npm test`: unit tests (vitest); `npx tsc --noEmit` and `npx eslint src scripts` before commits
+- The user opens the app from desktop/Start menu shortcuts (`scripts/launch.ps1`): production
+  build on port 3001, rebuilt automatically when HEAD changes. Port 3000 stays free for `npm run dev`.
 
 ## Code map
 - `src/lib/` (pure, unit-tested, no DB):
