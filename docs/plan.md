@@ -14,7 +14,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 5 | Recipes + reusable meals | |
 | 6 | Planner, log, shopping list | |
 | 7 | Creative I: FlavorGraph import + pairing explorer | |
-| 8 | Creative II: graph, bridges, flavor-aware substitutes | |
+| 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | |
 | 9 | Polish: backup, speed, accessibility, phone readiness | |
 
 ## Session log
@@ -35,3 +35,14 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Revision 3: user not convinced by the B x D creative look. Researched references and built
   four alternatives (Noma Projects labels, The Flavour Thesaurus, Hot & Cool big type,
   The Gourmand gallery). Copy rewritten in a chef's voice.
+- Revision 4: creative section uses the base look on a starry night sky with purple details;
+  purple sidebar block with Pairings, Opposites, Bridges, Flavor map. Prose copy on hold.
+  Opposites added to session 8 (often cooked together, few shared aroma compounds).
+
+## Creative features (sessions 7-8)
+- Pairs well: ingredients sharing the most flavor compounds (FlavorGraph compound edges).
+- Opposites: pairs recipes combine often but that share few compounds (high co-occurrence,
+  low compound overlap). Contrast pairing, common in East Asian cuisines per Ahn et al. 2011.
+- Bridges: for two ingredients that rarely meet, the ingredients that pair well with both
+  (shortest strong paths in the pairing graph).
+- Flavor map: the network graph to browse.

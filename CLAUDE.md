@@ -19,17 +19,14 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 ## Design system
 - Base "Calm Coach": tokens in `src/app/globals.css`, Manrope, pill buttons, rounded
   cards (rounded-3xl), thick bars, plain-language status (always word + color).
-- Creative section: mix of Editorial (Newsreader headlines) and Market Expressive
-  (Bricolage Grotesque, produce tonal containers). No illustrated ingredients: use a
-  representative color + light styling, kept compact.
-- Creative copy voice: how a chef with some artistic flair talks. Practical kitchen knowledge
-  (technique, timing, why it works) said with a light touch. Cultural references only where
-  they fit naturally (e.g. Greek spanakopita, Catalan spinach with pine nuts); must be accurate.
-  Not flowery or forced.
-- Creative look: under review. Four alternatives on `/design` (Lab labels / Flavour thesaurus /
-  Big type / Gallery) in `src/app/design/creative-alts/`. Ingredient chips stay.
-- Creative backgrounds tint themselves from the ingredients on screen
-  (`src/components/creative/creative-backdrop.tsx`: field / market / rings).
+- Creative section: SAME look as the rest of the app (same cards, chips, bars), on a starry
+  night-sky background with purple details (`src/components/creative/starry-sky.tsx`,
+  `CreativeSurface`). Its links live in a purple block in the sidebar. Violet (`bg-violet`)
+  is the creative accent for bars.
+- Ingredients: color chips with food-group textures (`src/components/food/ingredient-chip.tsx`).
+  No illustrations.
+- Creative copy: on hold. Show information only (names, numbers, short factual labels). If prose
+  returns later: a chef's voice with some flair, accurate cultural references only where natural.
 - Living style guide at `/design`.
 
 ## Working agreement

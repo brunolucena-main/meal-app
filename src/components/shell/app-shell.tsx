@@ -4,17 +4,35 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 
 import { cn } from "@/lib/utils"
-import { navItems, toolItems, type NavItem } from "./nav-items"
+import { creativeItems, navItems, toolItems, type NavItem } from "./nav-items"
 import { ThemeToggle } from "./theme-toggle"
 
-function NavLink({ item, active }: { item: NavItem; active: boolean }) {
+type Tone = "default" | "creative"
+
+const toneStyles: Record<Tone, { link: string; active: string; disabled: string; badge: string }> = {
+  default: {
+    link: "hover:bg-muted",
+    active: "bg-accent text-accent-foreground hover:bg-accent",
+    disabled: "text-muted-foreground/60",
+    badge: "bg-muted text-muted-foreground",
+  },
+  creative: {
+    link: "text-creative-foreground hover:bg-white/10",
+    active: "bg-white/20 text-creative-foreground hover:bg-white/20",
+    disabled: "text-creative-foreground/65",
+    badge: "bg-white/15 text-creative-foreground",
+  },
+}
+
+function NavLink({ item, active, tone = "default" }: { item: NavItem; active: boolean; tone?: Tone }) {
   const Icon = item.icon
+  const styles = toneStyles[tone]
   const content = (
     <>
       <Icon className="size-[18px] shrink-0" aria-hidden />
       <span className="flex-1">{item.label}</span>
       {item.comingIn ? (
-        <span className="rounded-full bg-muted px-2 py-0.5 text-[11px] font-semibold text-muted-foreground">
+        <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", styles.badge)}>
           S{item.comingIn}
         </span>
       ) : null}
@@ -24,11 +42,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 
   if (item.comingIn) {
     return (
-      <span
-        aria-disabled
-        title={`Built in session ${item.comingIn}`}
-        className={cn(base, "cursor-default text-muted-foreground/60")}
-      >
+      <span aria-disabled title={`Built in session ${item.comingIn}`} className={cn(base, "cursor-default", styles.disabled)}>
         {content}
       </span>
     )
@@ -39,8 +53,9 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       aria-current={active ? "page" : undefined}
       className={cn(
         base,
-        "transition-colors hover:bg-muted focus-visible:outline-2 focus-visible:outline-ring",
-        active && "bg-accent text-accent-foreground hover:bg-accent"
+        "transition-colors focus-visible:outline-2 focus-visible:outline-ring",
+        styles.link,
+        active && styles.active
       )}
     >
       {content}
@@ -62,6 +77,17 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <nav aria-label="Main" className="flex flex-col gap-1">
           {navItems.map((item) => (
             <NavLink key={item.href} item={item} active={isActive(item.href)} />
+          ))}
+        </nav>
+        <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1 rounded-2xl bg-creative p-2">
+          <span
+            id="creative-nav-h"
+            className="px-3 pt-1 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
+          >
+            Creative
+          </span>
+          {creativeItems.map((item) => (
+            <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />
           ))}
         </nav>
         <nav aria-label="Tools" className="flex flex-col gap-1 md:mt-auto">

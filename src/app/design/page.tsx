@@ -6,12 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { statusForGoal, statusForLimit, TargetBar } from "@/components/nutrition/target-bar"
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { CompareTable } from "@/components/nutrition/compare-table"
-import { BigType } from "./creative-alts/big-type"
-import { CreativeAlternatives } from "./creative-alts/creative-alternatives"
-import { creativeAltFontVars } from "./creative-alts/fonts"
-import { Gallery } from "./creative-alts/gallery"
-import { LabPantry } from "./creative-alts/lab-pantry"
-import { Thesaurus } from "./creative-alts/thesaurus"
+import { CreativeSpecimen } from "./creative-specimen"
 import { chipExamples, compareFoods, compareGroups } from "./examples"
 import { Swatch } from "./swatch"
 
@@ -263,19 +258,10 @@ export default function DesignPage() {
 
       <Section
         id="creative"
-        title="Creative section: four alternatives"
-        description="Each one is drawn from a real piece of food design and shows the same spinach page with the same ingredient chips. Pick one, or name the parts you like from several."
+        title="Creative section"
+        description="Same components as the rest of the app, on a night sky with purple details. Example data: pairings, opposites and bridges for spinach."
       >
-        <div className={creativeAltFontVars}>
-          <CreativeAlternatives
-            panels={{
-              lab: <LabPantry />,
-              thesaurus: <Thesaurus />,
-              bigtype: <BigType />,
-              gallery: <Gallery />,
-            }}
-          />
-        </div>
+        <CreativeSpecimen />
       </Section>
     </div>
   )
