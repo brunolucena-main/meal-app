@@ -1,36 +1,60 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Meal App
 
-## Getting Started
+A personal nutrition planner and creative cooking companion that runs on your own computer.
 
-First, run the development server:
+- **Plan and log**: a Today screen, a week planner, a food log and a shopping list built from
+  the plan.
+- **Know your food**: 8,000+ USDA foods with up to 40 nutrients each, compared side by side
+  per 100 g, per 100 kcal or per serving, against your own daily targets.
+- **Find better options**: nutritional substitutes ("like spinach, but more protein") and the
+  best sources for whatever you're short on today.
+- **Cook creatively**: flavor pairings, taste opposites, bridges between ingredients and a
+  flavor map, from FlavorGraph's recipe and aroma data.
+
+## Run it
+
+Needs Node.js 22 or newer.
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### First-time data setup
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The food and flavor data are downloaded once and imported into `data/meal-app.db` (git-ignored).
+See [docs/data.md](docs/data.md) for the download links, then:
 
-## Learn More
+```bash
+npm run data:import   # USDA FoodData Central, about 15 s
+npm run data:flavor   # FlavorGraph, needs the USDA import first
+```
 
-To learn more about Next.js, take a look at the following resources:
+Your own data (profile, recipes, plans, logs) lives in the same database file. Download a backup
+from the **Backup** page now and then.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Develop
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm test              # unit tests (vitest)
+npx tsc --noEmit      # type check
+npx eslint src scripts
+npm run db:generate   # after editing src/server/db/user-schema.ts
+```
 
-## Deploy on Vercel
+- Plan and progress: [docs/plan.md](docs/plan.md)
+- Data sources and import details: [docs/data.md](docs/data.md)
+- Open questions: [docs/questions.md](docs/questions.md)
+- Living style guide: http://localhost:3000/design
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Data sources
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- USDA FoodData Central (Foundation Foods, SR Legacy): public domain.
+- FlavorGraph (Park et al., Scientific Reports 2021): Apache-2.0.
+- Daily targets: Mifflin-St Jeor energy equation, NIH Dietary Reference Intakes, Dietary
+  Guidelines for Americans.
+
+Nutrition figures are estimates from public data. Allergen flags come from food names and can
+miss ingredients: treat them as a helper, not a guarantee.

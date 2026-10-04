@@ -4,6 +4,7 @@ import {
   ChefHat,
   Columns3,
   Contrast,
+  DatabaseBackup,
   Grape,
   Medal,
   Network,
@@ -44,4 +45,7 @@ export const creativeItems: NavItem[] = [
   { href: "/flavor-map", label: "Flavor map", icon: Network },
 ]
 
-export const toolItems: NavItem[] = [{ href: "/design", label: "Design system", icon: SwatchBook }]
+export const toolItems: NavItem[] = [
+  { href: "/data", label: "Backup", icon: DatabaseBackup },
+  { href: "/design", label: "Design system", icon: SwatchBook },
+]

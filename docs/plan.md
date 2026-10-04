@@ -15,7 +15,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 6 | Planner, log, shopping list | Done |
 | 7 | Creative I: FlavorGraph import + pairing explorer | Done |
 | 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | Done |
-| 9 | Polish: backup, speed, accessibility, phone readiness | |
+| 9 | Polish: backup, speed, accessibility, phone readiness | Done |
 
 ## Session log
 
@@ -141,3 +141,19 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   cosine of co-occurrence profiles, plus nutrition similarity when both match USDA).
 - Fixes: theme script via next/script beforeInteractive (React 19.2 warning); explicit
   columns in flavor queries so re-imports don't break a running server.
+
+### Session 9
+- Backup: /data page, GET /api/backup (JSON of all user tables), restore with confirmation
+  (replaces data in one transaction; foreign or newer files rejected). Round trip tested.
+- Accessibility: skip-to-content link, main landmark focusable; labels on all inputs; status
+  always shown in words as well as color.
+- Phone readiness: below the md breakpoint the sidebar folds behind a Menu button (closes on
+  navigation); pages fit at 375 px. Known gap for real phone use: iOS Safari ignores the fixed
+  background used by the creative gradient (falls back to a scrolling gradient, still fine).
+- README rewritten with setup, data import and development commands.
+
+## Ideas for later
+- Your real profile on the Targets page (see docs/questions.md).
+- Barcode / branded foods (Open Food Facts) if packaged foods matter.
+- Prose for creative pages when wanted (chef voice; see CLAUDE.md).
+- Hosting for phone use: libSQL already supports a hosted database via DATABASE_URL.

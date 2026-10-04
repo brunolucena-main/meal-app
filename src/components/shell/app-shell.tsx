@@ -1,7 +1,9 @@
 "use client"
 
+import { Menu, X } from "lucide-react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useState } from "react"
 
 import { StarrySky } from "@/components/creative/starry-sky"
 import { cn } from "@/lib/utils"
@@ -71,9 +73,18 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
   const onCreative = creativeRoutes.some((href) => pathname.startsWith(href))
+  // Narrow screens: the navigation folds behind a Menu button and closes after each navigation.
+  const [menu, setMenu] = useState<{ open: boolean; path: string }>({ open: false, path: pathname })
+  const menuOpen = menu.open && menu.path === pathname
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
+      <a
+        href="#main"
+        className="sr-only z-50 rounded-full bg-primary px-4 py-2 font-bold text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+      >
+        Skip to content
+      </a>
       {/*
         Where white meets purple the corner is rounded, and the aside's own background fills the
         curve. Creative pages: the aside is night, so the white block curves into the sky and no
@@ -92,11 +103,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             onCreative && "md:rounded-br-[28px]"
           )}
         >
-          <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
-            <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
-            Meal App
-          </Link>
-          <nav aria-label="Main" className="flex flex-col gap-1">
+          <div className="flex items-center justify-between gap-3">
+            <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
+              <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
+              Meal App
+            </Link>
+            <button
+              type="button"
+              aria-expanded={menuOpen}
+              aria-controls="main-nav creative-nav tools-nav"
+              onClick={() => setMenu({ open: !menuOpen, path: pathname })}
+              className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-bold md:hidden"
+            >
+              {menuOpen ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
+              Menu
+            </button>
+          </div>
+          <nav id="main-nav" aria-label="Main" className={cn("flex-col gap-1 md:flex", menuOpen ? "flex" : "hidden")}>
             {navItems.map((item) => (
               <NavLink key={item.href} item={item} active={isActive(item.href)} />
             ))}
@@ -104,9 +127,13 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <div
-          className={cn("night-gradient flex flex-1 flex-col px-4 pt-4 pb-5", !onCreative && "md:rounded-tr-[28px]")}
+          className={cn(
+            "night-gradient flex-1 flex-col px-4 pt-4 pb-5 md:flex",
+            menuOpen ? "flex" : "hidden",
+            !onCreative && "md:rounded-tr-[28px]"
+          )}
         >
-          <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
+          <nav id="creative-nav" aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
             <span
               id="creative-nav-h"
               className="px-3 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
@@ -117,7 +144,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />
             ))}
           </nav>
-          <nav aria-label="Tools" className="mt-auto flex flex-col gap-1 pt-6">
+          <nav id="tools-nav" aria-label="Tools" className="mt-auto flex flex-col gap-1 pt-6">
             {toolItems.map((item) => (
               <NavLink key={item.href} item={item} active={pathname === item.href} tone="creative" />
             ))}
@@ -127,7 +154,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
       </aside>
-      <main className={cn("relative min-w-0 flex-1", onCreative && "isolate text-on-night")}>
+      <main id="main" tabIndex={-1} className={cn("relative min-w-0 flex-1 outline-none", onCreative && "isolate text-on-night")}>
         {onCreative ? <StarrySky /> : null}
         {children}
       </main>
