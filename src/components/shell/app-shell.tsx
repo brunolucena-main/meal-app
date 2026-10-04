@@ -27,7 +27,7 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
       <span
         aria-disabled
         title={`Built in session ${item.comingIn}`}
-        className={cn(base, "cursor-default text-muted-foreground/70")}
+        className={cn(base, "cursor-default text-muted-foreground/60")}
       >
         {content}
       </span>

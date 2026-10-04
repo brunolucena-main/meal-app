@@ -91,26 +91,26 @@
 :root {
   --radius: 0.75rem;
 
-  --background: #f5f9f8;
-  --foreground: #141821;
+  --background: #fbfcfd;
+  --foreground: #0f131a;
   --card: #ffffff;
-  --card-foreground: #141821;
+  --card-foreground: #0f131a;
   --card-shadow: 0 1px 2px rgb(16 24 40 / 0.04), 0 6px 20px -6px rgb(16 24 40 / 0.1);
   --popover: #ffffff;
-  --popover-foreground: #141821;
+  --popover-foreground: #0f131a;
   --primary: #00806f;
   --primary-foreground: #ffffff;
   --secondary: #e4ebf0;
-  --secondary-foreground: #141821;
-  --muted: #eef3f5;
-  --muted-foreground: #4f586b;
+  --secondary-foreground: #0f131a;
+  --muted: #f0f3f6;
+  --muted-foreground: #3d4555;
   --accent: #d9f4ee;
   --accent-foreground: #005c50;
   --destructive: #d12f1f;
-  --border: #e1e7ec;
+  --border: #e2e7ec;
   --input: #cfd8e0;
   --ring: #00a08a;
-  --track: #e6ecf1;
+  --track: #e7ebf0;
 
   --series-1: #00a08a;
   --series-2: #f04e2f;
