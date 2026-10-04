@@ -6,6 +6,7 @@ import { useState, useTransition } from "react"
 
 import { removeEntry, setEntryAmount, setEntryStatus } from "@/app/day-actions"
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
+import { useT } from "@/components/i18n-provider"
 import { formatAmount } from "@/lib/format"
 import { cn } from "@/lib/utils"
 import type { EntryView } from "@/server/days"
@@ -15,7 +16,8 @@ export function EntryRow({ entry, flagged }: { entry: EntryView; flagged: boolea
   const [amount, setAmount] = useState(String(entry.amount))
   const [pending, startTransition] = useTransition()
   const eaten = entry.status === "eaten"
-  const unit = entry.kind === "food" ? "g" : entry.amount === 1 ? "serving" : "servings"
+  const t = useT()
+  const unit = entry.kind === "food" ? "g" : entry.amount === 1 ? t("serving") : t("servings")
 
   function commit() {
     const value = Number(amount)
@@ -28,7 +30,7 @@ export function EntryRow({ entry, flagged }: { entry: EntryView; flagged: boolea
         type="button"
         role="checkbox"
         aria-checked={eaten}
-        aria-label={eaten ? `Mark ${entry.name} as not eaten` : `Mark ${entry.name} as eaten`}
+        aria-label={eaten ? t("Mark {name} as not eaten", { name: entry.name }) : t("Mark {name} as eaten", { name: entry.name })}
         onClick={() => startTransition(() => setEntryStatus(entry.id, eaten ? "planned" : "eaten"))}
         className={cn(
           "grid size-7 place-items-center rounded-full border-2 transition-colors",
@@ -48,8 +50,8 @@ export function EntryRow({ entry, flagged }: { entry: EntryView; flagged: boolea
           </span>
         </Link>
         <span className="flex items-center gap-2 text-xs text-muted-foreground tabular-nums">
-          {formatAmount(entry.nutrients.energy ?? 0)} kcal · {formatAmount(entry.nutrients.protein ?? 0)} g protein
-          {eaten ? "" : " · planned"}
+          {formatAmount(entry.nutrients.energy ?? 0)} kcal · {t("{n} g protein", { n: formatAmount(entry.nutrients.protein ?? 0) })}
+          {eaten ? "" : ` · ${t("planned")}`}
           {flagged ? (
             <span className="inline-flex items-center gap-1 font-bold text-warn">
               <TriangleAlert className="size-3" aria-hidden />
@@ -60,7 +62,7 @@ export function EntryRow({ entry, flagged }: { entry: EntryView; flagged: boolea
       </span>
       <span className="flex items-center gap-1.5">
         <label htmlFor={`amount-${entry.id}`} className="sr-only">
-          Amount of {entry.name} in {unit}
+          {t("Amount of {name} in {unit}", { name: entry.name, unit })}
         </label>
         <input
           id={`amount-${entry.id}`}
@@ -78,7 +80,7 @@ export function EntryRow({ entry, flagged }: { entry: EntryView; flagged: boolea
         <span className="w-14 text-xs font-semibold text-muted-foreground">{unit}</span>
         <button
           type="button"
-          aria-label={`Remove ${entry.name}`}
+          aria-label={t("Remove {name}", { name: entry.name })}
           onClick={() => startTransition(() => removeEntry(entry.id))}
           className="grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
         >

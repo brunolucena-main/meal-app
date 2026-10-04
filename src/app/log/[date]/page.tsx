@@ -5,11 +5,13 @@ import { DayView, formatDayTitle } from "@/components/day/day-view"
 import { isoDate, parseIsoDate } from "@/lib/nutrition/day"
 import { getDay, recentItems } from "@/server/days"
 import { listRecipes } from "@/server/recipes"
+import { getT } from "@/server/i18n"
 import { getSettings } from "@/server/settings"
 
 export async function generateMetadata(props: PageProps<"/log/[date]">): Promise<Metadata> {
   const { date } = await props.params
-  return { title: parseIsoDate(date) ? `${formatDayTitle(date, isoDate(new Date()))} · Meal App` : "Log · Meal App" }
+  const t = await getT()
+  return { title: parseIsoDate(date) ? `${formatDayTitle(date, isoDate(new Date()), t)} · Meal App` : `${t("Log")} · Meal App` }
 }
 
 export default async function DayPage(props: PageProps<"/log/[date]">) {

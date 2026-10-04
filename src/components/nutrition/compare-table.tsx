@@ -5,7 +5,9 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { formatAmount } from "@/lib/format"
 import type { Comparison, CompareRow } from "@/lib/nutrition/compare"
 import { NUTRIENT_GROUP_LABELS, type NutrientGroup } from "@/lib/nutrition/nutrients"
+import type { T } from "@/lib/i18n"
 import { cn } from "@/lib/utils"
+import { getT } from "@/server/i18n"
 
 const seriesBg = ["bg-series-1", "bg-series-2", "bg-series-3", "bg-series-4"]
 const GROUP_ORDER: NutrientGroup[] = ["energy", "macros", "fats", "minerals", "vitamins"]
@@ -14,7 +16,7 @@ const GROUP_ORDER: NutrientGroup[] = ["energy", "macros", "fats", "minerals", "v
  * Compact side-by-side table: one column per food, one row per nutrient. Each cell shows the
  * amount, % of target and a thin bar. The colored line under each header chip keys its bars.
  */
-export function CompareTable({
+export async function CompareTable({
   foods,
   comparison,
   caption,
@@ -26,6 +28,7 @@ export function CompareTable({
   /** Extra controls under each food's header chip (portion picker, remove button...). */
   headerExtra?: (index: number) => React.ReactNode
 }) {
+  const t = await getT()
   const groups = GROUP_ORDER.map((g) => ({
     group: g,
     rows: comparison.rows.filter((r) => r.nutrient.group === g),
@@ -38,7 +41,7 @@ export function CompareTable({
         <thead>
           <tr>
             <th scope="col" className="w-40 px-5 py-3 text-left align-top text-xs font-bold text-muted-foreground">
-              Nutrient
+              {t("Nutrient")}
             </th>
             {foods.map((food, i) => (
               <th key={`${food.name}-${i}`} scope="col" className="px-4 py-3 text-left align-top font-normal">
@@ -62,21 +65,21 @@ export function CompareTable({
                   colSpan={foods.length + 1}
                   className="bg-muted px-5 py-1.5 text-left text-[11px] font-bold tracking-[0.1em] text-muted-foreground uppercase"
                 >
-                  {NUTRIENT_GROUP_LABELS[group]}
+                  {t(NUTRIENT_GROUP_LABELS[group])}
                 </th>
               </tr>
             ) : null}
             {rows.map((row) => (
               <tr key={row.nutrient.key} className="border-b border-border last:border-b-0">
                 <th scope="row" className="px-5 py-2 text-left font-semibold">
-                  {row.nutrient.name}
+                  {t(row.nutrient.name)}
                   {row.nutrient.kind === "limit" ? (
-                    <span className="ml-1.5 text-[11px] font-semibold text-muted-foreground">limit</span>
+                    <span className="ml-1.5 text-[11px] font-semibold text-muted-foreground">{t("limit")}</span>
                   ) : null}
                 </th>
                 {row.values.map((_, i) => (
                   <td key={i} className="px-4 py-2 align-middle">
-                    <CompareCell row={row} index={i} food={foods[i]} seriesClass={seriesBg[i]} />
+                    <CompareCell row={row} index={i} food={foods[i]} seriesClass={seriesBg[i]} t={t} />
                   </td>
                 ))}
               </tr>
@@ -93,11 +96,13 @@ function CompareCell({
   index,
   food,
   seriesClass,
+  t,
 }: {
   row: CompareRow
   index: number
   food: ChipFood
   seriesClass: string
+  t: T
 }) {
   const value = row.values[index]
   const { nutrient } = row
@@ -108,10 +113,13 @@ function CompareCell({
           render={<span tabIndex={0} />}
           className="text-xs font-semibold text-muted-foreground italic underline decoration-dotted underline-offset-4"
         >
-          no data
+          {t("no data")}
         </TooltipTrigger>
         <TooltipContent>
-          No {nutrient.name.toLowerCase()} value for {food.name}. It is left out of the comparison, not counted as zero.
+          {t("No {nutrient} value for {food}. It is left out of the comparison, not counted as zero.", {
+            nutrient: t(nutrient.name).toLowerCase(),
+            food: food.name,
+          })}
         </TooltipContent>
       </Tooltip>
     )
@@ -129,7 +137,7 @@ function CompareCell({
             {isBest ? (
               <BestIcon
                 className="ml-1 inline size-3.5 align-[-2px]"
-                aria-label={nutrient.kind === "limit" ? "lowest" : "highest"}
+                aria-label={nutrient.kind === "limit" ? t("lowest") : t("highest")}
               />
             ) : null}
           </span>
@@ -145,9 +153,9 @@ function CompareCell({
         ) : null}
       </TooltipTrigger>
       <TooltipContent>
-        {food.name} · {nutrient.name}: {formatAmount(value)} {nutrient.unit}
-        {pct !== null ? ` = ${Math.round(pct)}% of daily target` : ""}
-        {isBest ? (nutrient.kind === "limit" ? " · lowest here" : " · highest here") : ""}
+        {food.name} · {t(nutrient.name)}: {formatAmount(value)} {nutrient.unit}
+        {pct !== null ? ` ${t("= {pct}% of daily target", { pct: Math.round(pct) })}` : ""}
+        {isBest ? ` · ${nutrient.kind === "limit" ? t("lowest here") : t("highest here")}` : ""}
       </TooltipContent>
     </Tooltip>
   )

@@ -1,5 +1,6 @@
 import { formatAmount } from "@/lib/format"
 import { cn } from "@/lib/utils"
+import { getT } from "@/server/i18n"
 
 export { formatAmount }
 
@@ -34,7 +35,7 @@ export function statusForLimit(value: number, limit: number): TargetStatus {
   return value > limit ? "over" : "on"
 }
 
-export function TargetBar({
+export async function TargetBar({
   label,
   value,
   target,
@@ -49,7 +50,9 @@ export function TargetBar({
   status: TargetStatus
   className?: string
 }) {
+  const t = await getT()
   const pct = target > 0 ? (value / target) * 100 : 0
+  const statusText = t(statusLabel[status])
   return (
     <div className={cn("grid gap-1.5", className)}>
       <div className="flex items-baseline justify-between gap-3 text-sm">
@@ -64,7 +67,7 @@ export function TargetBar({
         aria-valuenow={Math.round(pct)}
         aria-valuemin={0}
         aria-valuemax={100}
-        aria-valuetext={`${Math.round(pct)}% of target, ${statusLabel[status].toLowerCase()}`}
+        aria-valuetext={t("{pct}% of target, {status}", { pct: Math.round(pct), status: statusText.toLowerCase() })}
         className="h-2.5 overflow-hidden rounded-full bg-track"
       >
         <div
@@ -73,7 +76,7 @@ export function TargetBar({
         />
       </div>
       <span className={cn("text-xs font-semibold", textByStatus[status])}>
-        {Math.round(pct)}% · {statusLabel[status]}
+        {Math.round(pct)}% · {statusText}
       </span>
     </div>
   )

@@ -5,9 +5,11 @@ import { usePathname, useRouter } from "next/navigation"
 import { useEffect, useRef, useState, useTransition } from "react"
 
 import { Input } from "@/components/ui/input"
+import { useT } from "@/components/i18n-provider"
 
 /** Search field that updates ?q= as you type (debounced) so results render on the server. */
 export function SearchBox({ initialQuery }: { initialQuery: string }) {
+  const t = useT()
   const router = useRouter()
   const pathname = usePathname()
   const [value, setValue] = useState(initialQuery)
@@ -32,7 +34,7 @@ export function SearchBox({ initialQuery }: { initialQuery: string }) {
       className="relative max-w-xl"
     >
       <label htmlFor="food-search" className="sr-only">
-        Search foods
+        {t("Search foods")}
       </label>
       <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
       <Input
@@ -41,7 +43,7 @@ export function SearchBox({ initialQuery }: { initialQuery: string }) {
         autoFocus
         autoComplete="off"
         value={value}
-        placeholder="Search 8,000+ foods, e.g. spinach, lentils, salmon"
+        placeholder={t("Search 8,000+ foods, e.g. spinach, lentils, salmon")}
         onChange={(e) => {
           setValue(e.target.value)
           clearTimeout(timer.current)
@@ -51,7 +53,7 @@ export function SearchBox({ initialQuery }: { initialQuery: string }) {
       />
       {pending ? (
         <span className="absolute top-1/2 right-5 -translate-y-1/2 text-xs font-semibold text-muted-foreground">
-          Searching…
+          {t("Searching…")}
         </span>
       ) : null}
     </form>

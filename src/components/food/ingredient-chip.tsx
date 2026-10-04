@@ -1,7 +1,7 @@
-import { TriangleAlert } from "lucide-react"
 import type { CSSProperties } from "react"
 
 import type { FoodGroup } from "@/lib/food/types"
+import { AllergenFlag } from "./allergen-flag"
 import { cn } from "@/lib/utils"
 
 export type { FoodGroup } from "@/lib/food/types"
@@ -91,13 +91,7 @@ export function IngredientChip({
     >
       <IngredientSwatch food={food} className={size === "md" ? "size-6" : "size-[18px]"} />
       {food.name}
-      {food.allergen ? (
-        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-warn">
-          <TriangleAlert className="size-3.5" aria-hidden />
-          {/* "Hazelnut ⚠ allergen" reads better than repeating the name. */}
-          {food.name.toLowerCase().includes(food.allergen.toLowerCase()) ? "allergen" : food.allergen}
-        </span>
-      ) : null}
+      {food.allergen ? <AllergenFlag name={food.name} allergen={food.allergen} /> : null}
     </span>
   )
 }

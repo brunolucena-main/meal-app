@@ -11,6 +11,7 @@ import { NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
 import { cn } from "@/lib/utils"
 import { getFood, SOURCE_LABELS } from "@/server/foods"
 import { getSettings } from "@/server/settings"
+import { getT } from "@/server/i18n"
 
 async function load(props: PageProps<"/foods/[id]">) {
   const { id } = await props.params
@@ -33,6 +34,7 @@ const headline: { key: NutrientKey; label: string; unit: string }[] = [
 ]
 
 export default async function FoodPage(props: PageProps<"/foods/[id]">) {
+  const t = await getT()
   const [food, settings] = await Promise.all([load(props), getSettings()])
   const { portion: portionParam } = await props.searchParams
   const flagged = food.allergens.filter((a) => settings.allergies.includes(a))
@@ -45,7 +47,7 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <Link href="/foods" className="inline-flex items-center gap-1.5 justify-self-start text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden />
-        Foods
+        {t("Foods")}
       </Link>
 
       <header className="grid gap-3">
@@ -57,17 +59,17 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
           <h1 className="flex-1 text-2xl font-extrabold tracking-tight md:text-3xl">{food.description}</h1>
           <Link href={`/substitutes?id=${food.id}`} className={buttonVariants({ variant: "outline" })}>
             <Replace aria-hidden />
-            Substitutes
+            {t("Substitutes")}
           </Link>
           <Link href={`/compare?ids=${food.id}`} className={buttonVariants({ variant: "outline" })}>
             <Columns3 aria-hidden />
-            Compare
+            {t("Compare")}
           </Link>
         </div>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
-          {food.category ? <span>{food.category}</span> : null}
+          {food.category ? <span>{t(food.category)}</span> : null}
           <span aria-hidden>·</span>
-          <span>{SOURCE_LABELS[food.source]}</span>
+          <span>{t(SOURCE_LABELS[food.source])}</span>
           <span aria-hidden>·</span>
           <a
             href={`https://fdc.nal.usda.gov/food-details/${food.id}/nutrients`}
@@ -80,20 +82,20 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
           </a>
           <span aria-hidden>·</span>
           <span>
-            {food.nutrientCount} of {NUTRIENTS.length} nutrients reported
+            {t("{n} of {total} nutrients reported", { n: food.nutrientCount, total: NUTRIENTS.length })}
           </span>
         </p>
         {flagged.length ? (
           <p className="flex items-center gap-2 justify-self-start rounded-2xl bg-warn-soft px-4 py-2.5 text-sm font-bold text-warn">
             <TriangleAlert className="size-4" aria-hidden />
-            Contains {flagged.join(", ")}, which is on your allergy list.
+            {t("Contains {allergens}, which is on your allergy list.", { allergens: flagged.map((a) => t(a)).join(", ") })}
           </p>
         ) : null}
       </header>
 
-      <nav aria-label="Amount" className="flex flex-wrap gap-2">
+      <nav aria-label={t("Amount")} className="flex flex-wrap gap-2">
         <BasisLink href={`/foods/${food.id}`} active={!portion}>
-          Per 100 g
+          {t("Per 100 g")}
         </BasisLink>
         {food.portions.map((p) => (
           <BasisLink key={p.id} href={`/foods/${food.id}?portion=${p.id}`} active={portion?.id === p.id}>
@@ -107,10 +109,10 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
           const raw = food.nutrients[h.key]
           return (
             <div key={h.key} className={cn("grid gap-1 rounded-3xl p-4", i === 0 ? "bg-tint-1" : "surface")}>
-              <span className="text-xs font-bold text-muted-foreground">{h.label}</span>
+              <span className="text-xs font-bold text-muted-foreground">{t(h.label)}</span>
               <span className="text-2xl font-extrabold tabular-nums">
                 {raw === undefined ? (
-                  <span className="text-base font-semibold text-muted-foreground italic">no data</span>
+                  <span className="text-base font-semibold text-muted-foreground italic">{t("no data")}</span>
                 ) : (
                   <>
                     {formatAmount(raw * factor)} <span className="text-sm font-semibold text-muted-foreground">{h.unit}</span>
@@ -123,9 +125,9 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
       </section>
 
       <p className="-mb-2 text-sm text-muted-foreground">
-        All values per <span className="font-bold text-foreground">{basis}</span>. Bars show the share of your{" "}
+        {t("All values per")} <span className="font-bold text-foreground">{basis}</span>. {t("Bars show the share of your")}{" "}
         <Link href="/targets" className="font-semibold text-primary hover:underline">
-          daily targets
+          {t("daily targets")}
         </Link>
         .
       </p>

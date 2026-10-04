@@ -6,8 +6,10 @@ import { usePathname } from "next/navigation"
 import { useState } from "react"
 
 import { StarrySky } from "@/components/creative/starry-sky"
+import { useT } from "@/components/i18n-provider"
 import { cn } from "@/lib/utils"
 import { creativeItems, navItems, toolItems, type NavItem } from "./nav-items"
+import { LanguageToggle } from "./language-toggle"
 import { ThemeToggle } from "./theme-toggle"
 
 type Tone = "default" | "creative"
@@ -28,12 +30,13 @@ const toneStyles: Record<Tone, { link: string; active: string; disabled: string;
 }
 
 function NavLink({ item, active, tone = "default" }: { item: NavItem; active: boolean; tone?: Tone }) {
+  const t = useT()
   const Icon = item.icon
   const styles = toneStyles[tone]
   const content = (
     <>
       <Icon className="size-[18px] shrink-0" aria-hidden />
-      <span className="flex-1">{item.label}</span>
+      <span className="flex-1">{t(item.label)}</span>
       {item.comingIn ? (
         <span className={cn("rounded-full px-2 py-0.5 text-[11px] font-semibold", styles.badge)}>
           S{item.comingIn}
@@ -45,7 +48,7 @@ function NavLink({ item, active, tone = "default" }: { item: NavItem; active: bo
 
   if (item.comingIn) {
     return (
-      <span aria-disabled title={`Built in session ${item.comingIn}`} className={cn(base, "cursor-default", styles.disabled)}>
+      <span aria-disabled title={t("Built in session {n}", { n: item.comingIn })} className={cn(base, "cursor-default", styles.disabled)}>
         {content}
       </span>
     )
@@ -70,6 +73,7 @@ function NavLink({ item, active, tone = "default" }: { item: NavItem; active: bo
 const creativeRoutes = creativeItems.map((item) => item.href)
 
 export function AppShell({ children }: { children: React.ReactNode }) {
+  const t = useT()
   const pathname = usePathname()
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
   const onCreative = creativeRoutes.some((href) => pathname.startsWith(href))
@@ -83,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         href="#main"
         className="sr-only z-50 rounded-full bg-primary px-4 py-2 font-bold text-primary-foreground focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
       >
-        Skip to content
+        {t("Skip to content")}
       </a>
       {/*
         Where white meets purple the corner is rounded, and the aside's own background fills the
@@ -116,10 +120,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               className="flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-sm font-bold md:hidden"
             >
               {menuOpen ? <X className="size-4" aria-hidden /> : <Menu className="size-4" aria-hidden />}
-              Menu
+              {t("Menu")}
             </button>
           </div>
-          <nav id="main-nav" aria-label="Main" className={cn("flex-col gap-1 md:flex", menuOpen ? "flex" : "hidden")}>
+          <nav id="main-nav" aria-label={t("Main")} className={cn("flex-col gap-1 md:flex", menuOpen ? "flex" : "hidden")}>
             {navItems.map((item) => (
               <NavLink key={item.href} item={item} active={isActive(item.href)} />
             ))}
@@ -138,18 +142,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               id="creative-nav-h"
               className="px-3 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
             >
-              Creative
+              {t("Creative")}
             </span>
             {creativeItems.map((item) => (
               <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />
             ))}
           </nav>
-          <nav id="tools-nav" aria-label="Tools" className="mt-auto flex flex-col gap-1 pt-6">
+          <nav id="tools-nav" aria-label={t("Tools")} className="mt-auto flex flex-col gap-1 pt-6">
             {toolItems.map((item) => (
               <NavLink key={item.href} item={item} active={pathname === item.href} tone="creative" />
             ))}
-            <div className="px-1 pt-2">
+            <div className="grid gap-2 px-1 pt-2">
               <ThemeToggle tone="creative" />
+              <LanguageToggle />
             </div>
           </nav>
         </div>

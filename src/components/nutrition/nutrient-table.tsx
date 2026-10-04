@@ -7,6 +7,7 @@ import {
 } from "@/lib/nutrition/nutrients"
 import type { Targets } from "@/lib/nutrition/targets"
 import { cn } from "@/lib/utils"
+import { getT } from "@/server/i18n"
 
 const GROUPS: NutrientGroup[] = ["macros", "fats", "minerals", "vitamins"]
 
@@ -15,7 +16,7 @@ const GROUPS: NutrientGroup[] = ["macros", "fats", "minerals", "vitamins"]
  * share of the daily target (personal target, else Daily Value) and a bar. Nutrients the source
  * doesn't report say "no data".
  */
-export function NutrientTable({
+export async function NutrientTable({
   nutrients,
   factor,
   targets = {},
@@ -29,6 +30,7 @@ export function NutrientTable({
   partial?: Partial<Record<NutrientKey, string[]>>
   className?: string
 }) {
+  const t = await getT()
   return (
     <div className={cn("grid gap-4 lg:grid-cols-2", className)}>
       {GROUPS.map((group) => {
@@ -38,18 +40,18 @@ export function NutrientTable({
           <section key={group} aria-labelledby={`nt-${group}`} className="surface self-start overflow-hidden rounded-3xl">
             <div className="flex items-baseline justify-between gap-3 px-5 pt-4 pb-2">
               <h3 id={`nt-${group}`} className="text-base font-extrabold">
-                {NUTRIENT_GROUP_LABELS[group]}
+                {t(NUTRIENT_GROUP_LABELS[group])}
               </h3>
               <span className="text-xs font-semibold text-muted-foreground">
-                {reported} of {defs.length} reported
+                {t("{n} of {total} reported", { n: reported, total: defs.length })}
               </span>
             </div>
             <table className="w-full text-sm">
               <thead className="sr-only">
                 <tr>
-                  <th scope="col">Nutrient</th>
-                  <th scope="col">Amount</th>
-                  <th scope="col">Percent of daily target</th>
+                  <th scope="col">{t("Nutrient")}</th>
+                  <th scope="col">{t("Amount")}</th>
+                  <th scope="col">{t("Percent of daily target")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -61,20 +63,20 @@ export function NutrientTable({
                   return (
                     <tr key={n.key} className="border-t border-border">
                       <th scope="row" className="w-[42%] px-5 py-2 text-left font-semibold">
-                        {n.name}
+                        {t(n.name)}
                         {n.kind === "limit" ? (
-                          <span className="ml-1.5 text-[11px] font-semibold text-muted-foreground">limit</span>
+                          <span className="ml-1.5 text-[11px] font-semibold text-muted-foreground">{t("limit")}</span>
                         ) : null}
                       </th>
                       {value === undefined ? (
                         <td colSpan={2} className="px-5 py-2 text-xs font-semibold text-muted-foreground italic">
-                          no data
+                          {t("no data")}
                         </td>
                       ) : (
                         <>
                           <td
                             className="py-2 pr-3 text-right font-bold whitespace-nowrap tabular-nums"
-                            title={partial[n.key] ? `At least this much: no data for ${partial[n.key]!.join(", ")}` : undefined}
+                            title={partial[n.key] ? t("At least this much: no data for {foods}", { foods: partial[n.key]!.join(", ") }) : undefined}
                           >
                             {partial[n.key] ? <span className="text-warn">≥ </span> : null}
                             {formatAmount(value)} <span className="text-xs font-semibold text-muted-foreground">{n.unit}</span>

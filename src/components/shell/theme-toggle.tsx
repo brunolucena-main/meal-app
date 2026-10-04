@@ -3,6 +3,7 @@
 import { Monitor, Moon, Sun } from "lucide-react"
 import { useEffect, useSyncExternalStore } from "react"
 
+import { useT } from "@/components/i18n-provider"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { cn } from "@/lib/utils"
 import { applyTheme, THEME_KEY, type ThemeChoice } from "./theme"
@@ -44,6 +45,7 @@ function setChoice(choice: ThemeChoice) {
 }
 
 export function ThemeToggle({ tone = "default" }: { tone?: "default" | "creative" }) {
+  const t = useT()
   // The saved choice only exists in the browser; render no selection on the server.
   const theme = useSyncExternalStore(subscribe, readChoice, () => null)
 
@@ -58,7 +60,7 @@ export function ThemeToggle({ tone = "default" }: { tone?: "default" | "creative
 
   return (
     <ToggleGroup
-      aria-label="Theme"
+      aria-label={t("Theme")}
       value={theme ? [theme] : []}
       onValueChange={(value) => {
         const next = value[0] as ThemeChoice | undefined
@@ -70,7 +72,7 @@ export function ThemeToggle({ tone = "default" }: { tone?: "default" | "creative
         <ToggleGroupItem
           key={value}
           value={value}
-          aria-label={label}
+          aria-label={t(label)}
           className={cn(
             "flex-1",
             tone === "creative" &&
