@@ -10,14 +10,19 @@ import { NUTRIENT_BY_KEY, NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nu
 import { similarity, toVector, variantKey } from "@/lib/nutrition/similarity"
 import { getCatalog } from "@/server/catalog"
 import { getSettings } from "@/server/settings"
+import { getT } from "@/server/i18n"
 
-export const metadata: Metadata = { title: "Substitutes · Meal App" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT()
+  return { title: `${t("Substitutes")} · Meal App` }
+}
 
 const select = "h-10 rounded-xl border border-input bg-card px-3 text-sm font-semibold"
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ""
 const isKey = (k: string): k is NutrientKey => k in NUTRIENT_BY_KEY
 
 export default async function SubstitutesPage(props: PageProps<"/substitutes">) {
+  const t = await getT()
   const params = await props.searchParams
   const id = Number(one(params.id))
   const more = one(params.more)
@@ -80,72 +85,72 @@ export default async function SubstitutesPage(props: PageProps<"/substitutes">) 
       <header className="grid gap-2">
         <h1 className="flex items-center gap-3 text-3xl font-extrabold tracking-tight">
           <IngredientSwatch food={{ name: source.description, color: source.color, group: source.group }} className="size-10 rounded-[14px_14px_14px_4px]" />
-          Substitutes
+          {t("Substitutes")}
         </h1>
         <p className="max-w-[65ch] text-muted-foreground">
-          Foods whose nutrient profile per 100 g is closest to <span className="font-bold text-foreground">{source.description}</span>,
-          weighed against your targets.
+          {t("Foods whose nutrient profile per 100 g is closest to")}{" "}
+          <span className="font-bold text-foreground">{source.description}</span>, {t("weighed against your targets.")}
         </p>
       </header>
 
       <form method="get" className="surface flex flex-wrap items-end gap-4 rounded-3xl p-5">
         <input type="hidden" name="id" value={source.id} />
         <label className="grid gap-1.5 text-sm font-bold">
-          But with more
+          {t("But with more")}
           <select name="more" defaultValue={moreKey ?? ""} className={select}>
-            <option value="">(anything)</option>
+            <option value="">{t("(anything)")}</option>
             {NUTRIENTS.filter((n) => n.kind === "goal").map((n) => (
               <option key={n.key} value={n.key}>
-                {n.name}
+                {t(n.name)}
               </option>
             ))}
           </select>
         </label>
         <label className="grid gap-1.5 text-sm font-bold">
-          And less
+          {t("And less")}
           <select name="less" defaultValue={lessKey ?? ""} className={select}>
-            <option value="">(anything)</option>
+            <option value="">{t("(anything)")}</option>
             {NUTRIENTS.filter((n) => n.key !== "water").map((n) => (
               <option key={n.key} value={n.key}>
-                {n.name}
+                {t(n.name)}
               </option>
             ))}
           </select>
         </label>
         <label className="grid gap-1.5 text-sm font-bold">
-          Look in
+          {t("Look in")}
           <select name="scope" defaultValue={scope} className={select}>
-            <option value="same">Same food group</option>
-            <option value="any">All foods</option>
+            <option value="same">{t("Same food group")}</option>
+            <option value="any">{t("All foods")}</option>
           </select>
         </label>
         <label className="flex h-10 items-center gap-2 text-sm font-semibold">
           <input type="checkbox" name="variants" value="1" defaultChecked={variants} className="size-4 accent-primary" />
-          Include other forms of this food
+          {t("Include other forms of this food")}
         </label>
-        <Button type="submit">Find</Button>
+        <Button type="submit">{t("Find")}</Button>
       </form>
 
       {top.length === 0 ? (
         <p className="text-muted-foreground">
-          No foods match. Try searching all foods, or drop the &ldquo;more&rdquo; or &ldquo;less&rdquo; condition.
+          {t("No foods match. Try searching all foods, or drop the “more” or “less” condition.")}
         </p>
       ) : (
         <div className="surface overflow-x-auto rounded-3xl">
           <table className="w-full min-w-[640px] text-sm">
             <caption className="px-5 pt-4 pb-2 text-left text-xs font-semibold text-muted-foreground">
-              Per 100 g · {moreKey ? `at least 25% more ${NUTRIENT_BY_KEY[moreKey].name.toLowerCase()}` : ""}
+              {t("Per 100 g")} · {moreKey ? t("at least 25% more {nutrient}", { nutrient: t(NUTRIENT_BY_KEY[moreKey].name).toLowerCase() }) : ""}
               {moreKey && lessKey ? " · " : ""}
-              {lessKey ? `at least 20% less ${NUTRIENT_BY_KEY[lessKey].name.toLowerCase()}` : ""}
-              {!moreKey && !lessKey ? "closest overall" : ""}
+              {lessKey ? t("at least 20% less {nutrient}", { nutrient: t(NUTRIENT_BY_KEY[lessKey].name).toLowerCase() }) : ""}
+              {!moreKey && !lessKey ? t("closest overall") : ""}
             </caption>
             <thead>
               <tr className="text-left text-xs text-muted-foreground">
-                <th scope="col" className="px-5 pb-2 font-semibold">Food</th>
-                <th scope="col" className="pb-2 pl-4 font-semibold">Match</th>
+                <th scope="col" className="px-5 pb-2 font-semibold">{t("Food")}</th>
+                <th scope="col" className="pb-2 pl-4 font-semibold">{t("Match")}</th>
                 {columns.map((k) => (
                   <th key={k} scope="col" className="pb-2 pl-4 text-right font-semibold">
-                    {NUTRIENT_BY_KEY[k].name}
+                    {t(NUTRIENT_BY_KEY[k].name)}
                   </th>
                 ))}
                 <th scope="col" className="pr-5 pb-2" />
@@ -154,7 +159,7 @@ export default async function SubstitutesPage(props: PageProps<"/substitutes">) 
             <tbody>
               <tr className="border-t border-border bg-muted/60">
                 <th scope="row" className="px-5 py-2.5 text-left font-bold">
-                  {source.description} <span className="font-semibold text-muted-foreground">(original)</span>
+                  {source.description} <span className="font-semibold text-muted-foreground">{t("(original)")}</span>
                 </th>
                 <td />
                 {columns.map((k) => (
@@ -187,7 +192,7 @@ export default async function SubstitutesPage(props: PageProps<"/substitutes">) 
                   ))}
                   <td className="py-2.5 pr-5 pl-4 text-right">
                     <Link href={`/compare?ids=${source.id},${food.id}`} className="text-xs font-bold text-primary hover:underline">
-                      Compare
+                      {t("Compare")}
                     </Link>
                   </td>
                 </tr>
@@ -199,7 +204,7 @@ export default async function SubstitutesPage(props: PageProps<"/substitutes">) 
       {hidden > 0 ? (
         <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
           <EyeOff className="size-4" aria-hidden />
-          {hidden} {hidden === 1 ? "food" : "foods"} hidden because of your allergy list.
+          {t("{n} hidden because of your allergy list.", { n: hidden })}
         </p>
       ) : null}
     </div>

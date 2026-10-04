@@ -12,8 +12,12 @@ import { gaps, parseIsoDate } from "@/lib/nutrition/day"
 import { getCatalog } from "@/server/catalog"
 import { getDay } from "@/server/days"
 import { getSettings } from "@/server/settings"
+import { getT } from "@/server/i18n"
 
-export const metadata: Metadata = { title: "Best sources · Meal App" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT()
+  return { title: `${t("Best sources")} · Meal App` }
+}
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ""
 const isKey = (k: string): k is NutrientKey => k in NUTRIENT_BY_KEY
@@ -28,6 +32,7 @@ const LIMIT_LABELS: Partial<Record<NutrientKey, string>> = {
 }
 
 export default async function BestSourcesPage(props: PageProps<"/best">) {
+  const t = await getT()
   const params = await props.searchParams
   // Checkboxes submit ?want=a&want=b; links use ?want=a,b. Accept both.
   const wantRaw = Array.isArray(params.want) ? params.want.join(",") : (params.want ?? "")
@@ -75,30 +80,28 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
   return (
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">Best sources</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Best sources")}</h1>
         <p className="max-w-[65ch] text-muted-foreground">
-          Foods that cover the most of your daily target for the nutrients you pick. Per 100 kcal finds nutrient-dense
-          foods; per 100 g finds the richest by weight.
+          {t("Foods that cover the most of your daily target for the nutrients you pick. Per 100 kcal finds nutrient-dense foods; per 100 g finds the richest by weight.")}
         </p>
       </header>
 
       {dayView ? (
         <p className="rounded-2xl bg-tint-1 px-4 py-3 text-sm font-semibold">
-          Ranking by what is still missing on {dayView.date}, counting what you ate and planned. Bars show how much of
-          that gap each food covers.
+          {t("Ranking by what is still missing on {date}, counting what you ate and planned. Bars show how much of that gap each food covers.", { date: dayView.date })}
         </p>
       ) : null}
 
       <form method="get" className="surface grid gap-4 rounded-3xl p-5">
         {dayView ? <input type="hidden" name="day" value={dayView.date} /> : null}
         <fieldset className="grid gap-2">
-          <legend className="mb-2 text-sm font-bold">Nutrients you want more of</legend>
+          <legend className="mb-2 text-sm font-bold">{t("Nutrients you want more of")}</legend>
           <div className="flex flex-wrap gap-2">
             {CHOOSABLE.map((n) => (
               <label key={n.key} className="cursor-pointer">
                 <input type="checkbox" name="want" value={n.key} defaultChecked={want.includes(n.key)} className="peer sr-only" />
                 <span className="inline-block rounded-full border border-border bg-card px-3 py-1 text-sm font-semibold peer-checked:border-transparent peer-checked:bg-primary peer-checked:text-primary-foreground peer-focus-visible:outline-2 peer-focus-visible:outline-ring">
-                  {n.name}
+                  {t(n.name)}
                 </span>
               </label>
             ))}
@@ -107,22 +110,22 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3 text-sm font-semibold">
           <label className="flex items-center gap-2">
             <input type="radio" name="basis" value="100kcal" defaultChecked={basis === "100kcal"} className="size-4 accent-primary" />
-            Per 100 kcal
+            {t("Per 100 kcal")}
           </label>
           <label className="flex items-center gap-2">
             <input type="radio" name="basis" value="100g" defaultChecked={basis === "100g"} className="size-4 accent-primary" />
-            Per 100 g
+            {t("Per 100 g")}
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" name="prepared" value="1" defaultChecked={includePrepared} className="size-4 accent-primary" />
-            Include prepared and packaged foods
+            {t("Include prepared and packaged foods")}
           </label>
           <label className="flex items-center gap-2">
             <input type="checkbox" name="spices" value="1" defaultChecked={includeSpices} className="size-4 accent-primary" />
-            Include herbs and spices
+            {t("Include herbs and spices")}
           </label>
           <Button type="submit" className="ml-auto">
-            Rank
+            {t("Rank")}
           </Button>
         </div>
       </form>
@@ -137,11 +140,11 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
                 {food.description}
               </Link>
               <span className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-                {food.category}
+                {food.category ? t(food.category) : null}
                 {flags.map((f) => (
                   <span key={f} className="inline-flex items-center gap-1 rounded-full bg-warn-soft px-2 py-0.5 font-bold text-warn">
                     <TriangleAlert className="size-3" aria-hidden />
-                    {LIMIT_LABELS[f]}
+                    {t(LIMIT_LABELS[f]!)}
                   </span>
                 ))}
               </span>
@@ -150,7 +153,7 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
               {want.map((k) =>
                 coverage[k] !== undefined ? (
                   <span key={k} className="flex items-center gap-2 text-xs">
-                    <span className="w-20 truncate font-semibold">{NUTRIENT_BY_KEY[k].name}</span>
+                    <span className="w-20 truncate font-semibold">{t(NUTRIENT_BY_KEY[k].name)}</span>
                     <span className="block h-2 flex-1 bg-track">
                       <span
                         className={cn("block h-full rounded-r-[4px] bg-primary")}
@@ -161,19 +164,19 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
                   </span>
                 ) : null
               )}
-              <span className="sr-only">Score {Math.round(score * 100)}</span>
+              <span className="sr-only">{t("Score {n}", { n: Math.round(score * 100) })}</span>
             </div>
           </li>
         ))}
       </ol>
       <p className="-mt-2 text-xs text-muted-foreground">
-        Bars: share of your daily target {basis === "100kcal" ? "in 100 kcal of the food" : "in 100 g of the food"}. Foods
-        without data for a chosen nutrient are left out.
+        {basis === "100kcal" ? t("Bars: share of your daily target in 100 kcal of the food.") : t("Bars: share of your daily target in 100 g of the food.")}{" "}
+        {t("Foods without data for a chosen nutrient are left out.")}
       </p>
       {hidden > 0 ? (
         <p className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
           <EyeOff className="size-4" aria-hidden />
-          {hidden} {hidden === 1 ? "food" : "foods"} hidden because of your allergy list.
+          {t("{n} hidden because of your allergy list.", { n: hidden })}
         </p>
       ) : null}
     </div>

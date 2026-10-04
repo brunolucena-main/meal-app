@@ -31,7 +31,7 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 ## Decisions (from the user, don't re-ask)
 - Desktop browser first; keep it easy to add phone support later (responsive layout,
   data access behind a server layer, DB driver that can move to a hosted libSQL later).
-- Metric units, English UI.
+- Metric units. English and Spanish UI (EN/ES switch in the sidebar, cookie `lang`).
 - Food data: USDA FoodData Central (Foundation Foods + SR Legacy), imported from bulk files.
 - Flavor data: FlavorGraph (Apache-2.0), open data only, no AI/LLM calls.
 - Potential hazelnut allergy: hide hazelnut-tagged foods from suggestions, warn (not block)
@@ -57,6 +57,17 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 - Creative copy: on hold. Show information only (names, numbers, short factual labels). If prose
   returns later: a chef's voice with some flair, accurate cultural references only where natural.
 - Style guide: `docs/design-system.html` (standalone snapshot, open in a browser; not part of the app).
+
+## Translations (English / Spanish)
+- English text is the key: `t("Search foods")`. Spanish lives in `src/lib/i18n/es.ts`; missing
+  entries fall back to English. Placeholders: `t("{n} items", { n })`.
+- Server components: `const t = await getT()` (`src/server/i18n.ts`); client components:
+  `const t = useT()` (`src/components/i18n-provider.tsx`).
+- Data labels (nutrient names, categories, slots, tastes) are translated at render: `t(n.name)`.
+  Food and FlavorGraph ingredient names stay English (they are the database's names).
+- Numbers and dates: `formatAmount` / `formatDate` from `src/lib/format.ts` follow the locale.
+- `node scripts/i18n-scan.mjs` lists unwrapped interface text; `--keys` lists all keys. Every
+  new string needs a Spanish entry.
 
 ## Working agreement
 - Work in ~15-minute chunks; stop after each with a short progress report.

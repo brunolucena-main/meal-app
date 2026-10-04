@@ -166,3 +166,9 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Barcode / branded foods (Open Food Facts) if packaged foods matter.
 - Prose for creative pages when wanted (chef voice; see CLAUDE.md).
 - Hosting for phone use: libSQL already supports a hosted database via DATABASE_URL.
+
+### Requested after session 9
+- Design system moved out of the app into `docs/design-system.html` (standalone snapshot).
+- Spanish interface with an EN/ES switch; number and date formats follow the language. Food
+  names stay in English (USDA and FlavorGraph data).
+

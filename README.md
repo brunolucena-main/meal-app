@@ -1,6 +1,7 @@
 # Meal App
 
-A personal nutrition planner and creative cooking companion that runs on your own computer.
+A personal nutrition planner and creative cooking companion that runs on your own computer,
+in English or Spanish (switch at the bottom of the sidebar).
 
 - **Plan and log**: a Today screen, a week planner, a food log and a shopping list built from
   the plan.

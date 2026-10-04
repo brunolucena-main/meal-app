@@ -6,14 +6,19 @@ import { listFlavorIngredients } from "@/server/flavor"
 import { flavorMap } from "@/server/flavor-graph"
 import { getSettings } from "@/server/settings"
 import { IngredientFinder } from "../pairings/ingredient-finder"
+import { getT } from "@/server/i18n"
 
-export const metadata: Metadata = { title: "Flavor map · Meal App" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT()
+  return { title: `${t("Flavor map")} · Meal App` }
+}
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ""
 const W = 900
 const H = 620
 
 export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
+  const t = await getT()
   const params = await props.searchParams
   const id = Number(one(params.i))
   const [settings, all, map] = await Promise.all([
@@ -27,11 +32,10 @@ export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
     return (
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
         <header className="grid gap-2">
-          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">Creative</p>
-          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">Flavor map</h1>
+          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Creative")}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Flavor map")}</h1>
           <p className="max-w-[65ch] text-on-night-muted">
-            An ingredient&apos;s neighborhood: what recipes put next to it, and which of those also go together. Pick an
-            ingredient to start, then click any neighbor to move to it.
+            {t("An ingredient's neighborhood: what recipes put next to it, and which of those also go together. Pick an ingredient to start, then click any neighbor to move to it.")}
           </p>
         </header>
         <IngredientFinder items={finderItems} basePath="/flavor-map" param="i" />
@@ -49,14 +53,14 @@ export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
       <FlavorHeader ingredient={map.center} tastes={map.center.tastes} current="map" section="Flavor map" />
 
       {nodes.length === 0 ? (
-        <p className="text-on-night-muted">No recipe partners on record for {map.center.name.toLowerCase()}.</p>
+        <p className="text-on-night-muted">{t("No recipe partners on record for {name}.", { name: map.center.name.toLowerCase() })}</p>
       ) : (
         <figure className="grid gap-2">
           <div className="overflow-x-auto">
             <svg viewBox={`0 0 ${W} ${H}`} className="w-full min-w-[640px]" role="img" aria-labelledby="map-title map-desc">
-              <title id="map-title">{`Flavor map of ${map.center.name}`}</title>
+              <title id="map-title">{t("Flavor map of {name}", { name: map.center.name })}</title>
               <desc id="map-desc">
-                {`${map.center.name} in the center, surrounded by the ${nodes.length} ingredients recipes combine with it most. Closer means more often.`}
+                {t("{name} in the center, surrounded by the {n} ingredients recipes combine with it most. Closer means more often.", { name: map.center.name, n: nodes.length })}
               </desc>
               {map.edges.map((e) => {
                 const a = pos.get(e.a)
@@ -81,7 +85,7 @@ export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
                 const y = n.y * H
                 const r = 9 + n.strength * 9
                 return (
-                  <a key={n.ingredient.id} href={`/flavor-map?i=${n.ingredient.id}`} aria-label={`${n.ingredient.name}, open its map`}>
+                  <a key={n.ingredient.id} href={`/flavor-map?i=${n.ingredient.id}`} aria-label={t("{name}, open its map", { name: n.ingredient.name })}>
                     <circle cx={x} cy={y} r={r + 3} fill="var(--night)" />
                     <foreignObject x={x - r} y={y - r} width={r * 2} height={r * 2}>
                       <div style={{ ...swatchStyle(n.ingredient.color, n.ingredient.group), width: "100%", height: "100%", borderRadius: "50%" }} />
@@ -102,8 +106,7 @@ export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
             </svg>
           </div>
           <figcaption className="text-xs text-on-night-muted">
-            Closer and thicker lines: recipes combine them more. Faint lines link neighbors that also go together. Click a
-            neighbor to move the map to it.
+            {t("Closer and thicker lines: recipes combine them more. Faint lines link neighbors that also go together. Click a neighbor to move the map to it.")}
           </figcaption>
         </figure>
       )}

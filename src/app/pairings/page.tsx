@@ -8,13 +8,18 @@ import { getFlavorIngredient, getPartners, listFlavorIngredients, type Pairing }
 import { getFlavorGraph, swaps } from "@/server/flavor-graph"
 import { getSettings } from "@/server/settings"
 import { IngredientFinder } from "./ingredient-finder"
+import { getT } from "@/server/i18n"
 
-export const metadata: Metadata = { title: "Pairings · Meal App" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT()
+  return { title: `${t("Pairings")} · Meal App` }
+}
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ""
 const TOP = 15
 
 export default async function PairingsPage(props: PageProps<"/pairings">) {
+  const t = await getT()
   const params = await props.searchParams
   const id = Number(one(params.i))
   const [settings, all, ingredient] = await Promise.all([
@@ -28,11 +33,10 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
     return (
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
         <header className="grid gap-2">
-          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">Creative</p>
-          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">Pairings</h1>
+          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Creative")}</p>
+          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Pairings")}</h1>
           <p className="max-w-[65ch] text-on-night-muted">
-            Pick an ingredient to see what pairs with it: by shared aroma compounds, and by how often recipes put them
-            together.
+            {t("Pick an ingredient to see what pairs with it: by shared aroma compounds, and by how often recipes put them together.")}
           </p>
         </header>
         <IngredientFinder items={finderItems} basePath="/pairings" param="i" />
@@ -65,10 +69,10 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
       <FlavorHeader ingredient={ingredient} tastes={tastes} current="pairings" section="Pairings" />
       <p className="-mt-2 text-sm font-medium text-on-night-muted">
         {!ingredient.compoundCount
-          ? "No aroma compound data on record."
+          ? t("No aroma compound data on record.")
           : ingredient.genericAroma
-            ? "Only a generic aroma profile on record."
-            : `${ingredient.compoundCount} aroma compounds on record.`}
+            ? t("Only a generic aroma profile on record.")
+            : t("{n} aroma compounds on record.", { n: ingredient.compoundCount })}
       </p>
       {flagged.length ? (
         <p className="justify-self-start rounded-2xl bg-warn-soft px-4 py-2 text-sm font-bold text-warn">
@@ -79,39 +83,39 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="aromas-h" className="surface grid content-start gap-3 self-start rounded-3xl p-5">
           <div className="grid gap-0.5">
-            <h2 id="aromas-h" className="text-base font-extrabold">Pairs well</h2>
-            <p className="text-xs font-medium text-muted-foreground">Most aroma compounds in common, relative to each ingredient&apos;s total</p>
+            <h2 id="aromas-h" className="text-base font-extrabold">{t("Pairs well")}</h2>
+            <p className="text-xs font-medium text-muted-foreground">{t("Most aroma compounds in common, relative to each ingredient's total")}</p>
           </div>
           {byAroma.length ? (
             <PartnerTable
               rows={byAroma}
               bar={(p) => p.overlap! / maxOverlap}
-              primary={(p) => `${p.shared} shared`}
-              secondary={(p) => (p.together ? `cooked together ${Math.round(p.together * 100)}` : "rarely in recipes")}
+              primary={(p) => t("{n} shared", { n: p.shared ?? 0 })}
+              secondary={(p) => (p.together ? t("cooked together {n}", { n: Math.round(p.together * 100) }) : t("rarely in recipes"))}
             />
           ) : (
             <p className="text-sm text-muted-foreground">
               {ingredient.genericAroma
-                ? `The aroma data for ${ingredient.name.toLowerCase()} is a generic placeholder shared with many other foods, so it can't single out partners.`
-                : `No aroma compound data for ${ingredient.name.toLowerCase()}.`}
+                ? t("The aroma data for {name} is a generic placeholder shared with many other foods, so it can't single out partners.", { name: ingredient.name.toLowerCase() })
+                : t("No aroma compound data for {name}.", { name: ingredient.name.toLowerCase() })}
             </p>
           )}
         </section>
 
         <section aria-labelledby="recipes-h" className="surface grid content-start gap-3 self-start rounded-3xl p-5">
           <div className="grid gap-0.5">
-            <h2 id="recipes-h" className="text-base font-extrabold">Cooked together</h2>
-            <p className="text-xs font-medium text-muted-foreground">How strongly recipes combine them (score 0-100 from about a million recipes)</p>
+            <h2 id="recipes-h" className="text-base font-extrabold">{t("Cooked together")}</h2>
+            <p className="text-xs font-medium text-muted-foreground">{t("How strongly recipes combine them (score 0-100 from about a million recipes)")}</p>
           </div>
           {byRecipes.length ? (
             <PartnerTable
               rows={byRecipes}
               bar={(p) => p.together! / (byRecipes[0].together ?? 1)}
               primary={(p) => `${Math.round(p.together! * 100)}`}
-              secondary={(p) => (p.shared !== null ? `${p.shared} shared aromas` : "no aroma data")}
+              secondary={(p) => (p.shared !== null ? t("{n} shared aromas", { n: p.shared }) : t("no aroma data"))}
             />
           ) : (
-            <p className="text-sm text-muted-foreground">No recipe data for {ingredient.name.toLowerCase()}.</p>
+            <p className="text-sm text-muted-foreground">{t("No recipe data for {name}.", { name: ingredient.name.toLowerCase() })}</p>
           )}
         </section>
       </div>
@@ -119,9 +123,9 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
       {swapsShown.length ? (
         <section aria-labelledby="swaps-h" className="surface grid gap-3 rounded-3xl p-5">
           <div className="grid gap-0.5">
-            <h2 id="swaps-h" className="text-base font-extrabold">Swap in</h2>
+            <h2 id="swaps-h" className="text-base font-extrabold">{t("Swap in")}</h2>
             <p className="text-xs font-medium text-muted-foreground">
-              Used with the same partners in recipes; nutrition match shown where both have USDA data
+              {t("Used with the same partners in recipes; nutrition match shown where both have USDA data")}
             </p>
           </div>
           <ul className="grid gap-x-6 sm:grid-cols-2">
@@ -131,8 +135,8 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
                   <IngredientChip food={{ name: w.ingredient.name, color: w.ingredient.color, group: w.ingredient.group }} size="sm" className="hover:bg-muted" />
                 </Link>
                 <span className="text-right text-[11px] font-semibold text-muted-foreground tabular-nums">
-                  used alike {Math.round(w.context * 100)}%
-                  {w.nutrition !== null ? ` · nutrition ${Math.round(w.nutrition * 100)}%` : ""}
+                  {t("used alike {n}%", { n: Math.round(w.context * 100) })}
+                  {w.nutrition !== null ? ` · ${t("nutrition {n}%", { n: Math.round(w.nutrition * 100) })}` : ""}
                 </span>
               </li>
             ))}
@@ -143,12 +147,12 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
       {hidden > 0 ? (
         <p className="flex items-center gap-2 text-sm font-semibold text-on-night-muted">
           <EyeOff className="size-4" aria-hidden />
-          {hidden} {hidden === 1 ? "ingredient" : "ingredients"} hidden because of your allergy list.
+          {t("{n} hidden because of your allergy list.", { n: hidden })}
         </p>
       ) : null}
 
-      <section aria-label="Another ingredient" className="grid gap-3 pt-2">
-        <h2 className="text-sm font-bold text-on-night-muted">Another ingredient</h2>
+      <section aria-label={t("Another ingredient")} className="grid gap-3 pt-2">
+        <h2 className="text-sm font-bold text-on-night-muted">{t("Another ingredient")}</h2>
         <IngredientFinder items={finderItems} basePath="/pairings" param="i" />
       </section>
     </div>
