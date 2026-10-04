@@ -75,20 +75,21 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
       {/*
-        Where white meets purple the corner is rounded. The aside's own background shows through
-        the curve: purple on creative pages (the white block curves into the night), light on the
-        others (the purple section curves into the page).
+        Where white meets purple the corner is rounded, and the aside's own background fills the
+        curve. Creative pages: the aside is night, so the white block curves into the sky and no
+        edge line shows. Other pages: the aside is white with a full-height edge line, so the
+        purple section's corner curves inside the sidebar.
       */}
       <aside
         className={cn(
-          "flex shrink-0 flex-col md:sticky md:top-0 md:h-dvh md:w-60",
-          onCreative ? "night-gradient bg-night" : "bg-background"
+          "flex shrink-0 flex-col md:sticky md:top-0 md:h-dvh md:w-60 md:border-r",
+          onCreative ? "night-gradient bg-night md:border-transparent" : "bg-card md:border-border"
         )}
       >
         <div
           className={cn(
             "grid gap-6 border-b border-border bg-card px-4 py-5 md:border-b-0",
-            onCreative ? "md:rounded-br-[28px]" : "md:border-r"
+            onCreative && "md:rounded-br-[28px]"
           )}
         >
           <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
