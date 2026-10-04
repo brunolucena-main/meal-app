@@ -11,7 +11,6 @@ import {
   NotebookPen,
   ShoppingBasket,
   Sun,
-  SwatchBook,
   Target,
   Waypoints,
   type LucideIcon,
@@ -47,5 +46,4 @@ export const creativeItems: NavItem[] = [
 
 export const toolItems: NavItem[] = [
   { href: "/data", label: "Backup", icon: DatabaseBackup },
-  { href: "/design", label: "Design system", icon: SwatchBook },
 ]

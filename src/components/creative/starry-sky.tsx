@@ -51,8 +51,8 @@ const patternStyle: CSSProperties = {
 }
 
 /**
- * `anchored` (default) uses the viewport-anchored gradient shared with the sidebar. Framed
- * previews pass `anchored={false}` so the gradient fits their own box instead.
+ * `anchored` (default) uses the viewport-anchored gradient shared with the sidebar; framed
+ * uses pass `anchored={false}` so the gradient fits their own box instead.
  */
 export function StarrySky({ className, anchored = true }: { className?: string; anchored?: boolean }) {
   return (
@@ -70,16 +70,6 @@ export function StarrySky({ className, anchored = true }: { className?: string; 
       }
     >
       <div className="absolute inset-0" style={patternStyle} />
-    </div>
-  )
-}
-
-/** Wrapper for creative pages: the same app components on the night sky. */
-export function CreativeSurface({ className, children }: { className?: string; children: React.ReactNode }) {
-  return (
-    <div className={cn("relative isolate overflow-hidden text-on-night", className)}>
-      <StarrySky anchored={false} />
-      {children}
     </div>
   )
 }

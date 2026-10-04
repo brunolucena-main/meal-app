@@ -47,7 +47,7 @@ npm run db:generate   # after editing src/server/db/user-schema.ts
 - Plan and progress: [docs/plan.md](docs/plan.md)
 - Data sources and import details: [docs/data.md](docs/data.md)
 - Open questions: [docs/questions.md](docs/questions.md)
-- Living style guide: http://localhost:3000/design
+- Style guide: [docs/design-system.html](docs/design-system.html) (open in a browser)
 
 ## Data sources
 

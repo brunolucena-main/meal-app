@@ -66,8 +66,8 @@ function NavLink({ item, active, tone = "default" }: { item: NavItem; active: bo
   )
 }
 
-/** Routes that get the night-sky main area: the creative section plus its design preview. */
-const creativeRoutes = [...creativeItems.map((item) => item.href), "/design/creative"]
+/** Routes that get the night-sky main area. */
+const creativeRoutes = creativeItems.map((item) => item.href)
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
