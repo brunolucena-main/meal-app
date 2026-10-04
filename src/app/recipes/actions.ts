@@ -51,7 +51,8 @@ export async function removeIngredient(recipeId: number, itemId: number) {
 }
 
 export async function removeRecipe(id: number) {
-  await deleteRecipe(id)
+  const result = await deleteRecipe(id)
+  if (!result.ok) redirect(`/recipes/${id}?inUse=${result.usedBy}`)
   revalidatePath("/recipes", "layout")
   redirect("/recipes")
 }

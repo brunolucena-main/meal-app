@@ -36,7 +36,8 @@ const headline: { key: NutrientKey; label: string; unit: string }[] = [
 const field = "h-10 w-full rounded-xl border border-input bg-card px-3 text-sm font-semibold"
 
 export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
-  const [recipe, settings] = await Promise.all([load(props), getSettings()])
+  const [recipe, settings, search] = await Promise.all([load(props), getSettings(), props.searchParams])
+  const inUse = Number(Array.isArray(search.inUse) ? search.inUse[0] : search.inUse) || 0
   const serving = recipe.kind === "meal" ? "the meal" : "one serving"
   const partialCount = Object.keys(recipe.nutrition.partial).length
   const factor = recipe.servings > 0 ? 1 / recipe.servings : 1
@@ -117,6 +118,12 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
             </p>
           </section>
 
+          {inUse > 0 ? (
+            <p role="alert" className="rounded-2xl bg-warn-soft px-4 py-3 text-sm font-bold text-warn">
+              This {recipe.kind === "meal" ? "meal" : "recipe"} is on {inUse} planned or logged {inUse === 1 ? "item" : "items"}.
+              Remove {inUse === 1 ? "it" : "them"} from those days first, so your log stays accurate.
+            </p>
+          ) : null}
           <form action={removeRecipe.bind(null, recipe.id)}>
             <Button type="submit" variant="destructive">
               <Trash2 aria-hidden />

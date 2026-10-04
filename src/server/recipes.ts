@@ -1,10 +1,10 @@
-import { asc, desc, eq, inArray, max } from "drizzle-orm"
+import { asc, count, desc, eq, inArray, max } from "drizzle-orm"
 
 import { per100g, perServing, recipeNutrition, type RecipeNutrition } from "@/lib/nutrition/recipe"
 import type { FoodGroup } from "@/lib/food/types"
 import { getCatalog, type CatalogFood } from "@/server/catalog"
 import { db, ensureMigrated, libsql } from "@/server/db/client"
-import { recipeItems, recipes } from "@/server/db/user-schema"
+import { entries, recipeItems, recipes } from "@/server/db/user-schema"
 import type { FoodPortion } from "@/server/foods"
 
 export type RecipeKind = "recipe" | "meal"
@@ -131,10 +131,23 @@ export async function updateRecipe(
   await db.update(recipes).set({ ...patch, updatedAt: new Date() }).where(eq(recipes.id, id))
 }
 
-export async function deleteRecipe(id: number) {
+/** How many planned or logged items use this recipe. */
+export async function recipeUsage(id: number): Promise<number> {
+  const [{ n }] = await db.select({ n: count() }).from(entries).where(eq(entries.recipeId, id))
+  return n
+}
+
+/**
+ * Deletes a recipe and its ingredients. Refuses while days still use it, so deleting a recipe
+ * can never silently change logged totals.
+ */
+export async function deleteRecipe(id: number): Promise<{ ok: true } | { ok: false; usedBy: number }> {
+  const usedBy = await recipeUsage(id)
+  if (usedBy > 0) return { ok: false, usedBy }
   // Delete children explicitly: SQLite only cascades with foreign keys switched on.
   await db.delete(recipeItems).where(eq(recipeItems.recipeId, id))
   await db.delete(recipes).where(eq(recipes.id, id))
+  return { ok: true }
 }
 
 export async function addRecipeItem(recipeId: number, foodId: number, grams: number) {
