@@ -7,8 +7,8 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 
 | # | Session | Status |
 |---|---|---|
-| 1 | Project setup + design system | In progress |
-| 2 | USDA data + food search | |
+| 1 | Project setup + design system | Done |
+| 2 | USDA data + food search | Done |
 | 3 | Comparison engine + Compare screen | |
 | 4 | Targets, substitutes, goal ranking, allergy filter | |
 | 5 | Recipes + reusable meals | |
@@ -59,3 +59,12 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   (one shared viewport-anchored gradient).
 - Revision 8: rounded corners (28px) where white meets purple: white sidebar block curves into
   the night on creative pages; purple section curves into the light page elsewhere.
+
+### Session 2
+- USDA Foundation (Apr 2026) + SR Legacy imported into SQLite via libSQL + Drizzle:
+  8,194 foods, ~265k nutrient values, ~14.6k portions, 20 hazelnut-tagged foods. See docs/data.md.
+- Nutrient catalog (40 nutrients, FDA Daily Values, goal/limit/info) with id fallbacks.
+- /foods: live search with ranking tuned for USDA naming ("Fish, salmon, ...").
+- /foods/[id]: full profile per 100 g or per USDA portion, grouped tables, % DV bars,
+  "no data" for missing values, allergen warning, link to the FDC page.
+- Unit tests (vitest) for nutrient resolution, grouping/colors and allergen tags.

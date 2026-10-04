@@ -1,4 +1,7 @@
+import { formatAmount } from "@/lib/format"
 import { cn } from "@/lib/utils"
+
+export { formatAmount }
 
 export type TargetStatus = "under" | "on" | "over"
 
@@ -74,10 +77,4 @@ export function TargetBar({
       </span>
     </div>
   )
-}
-
-export function formatAmount(value: number) {
-  if (value >= 100) return Math.round(value).toLocaleString("en")
-  if (value >= 10) return value.toFixed(0)
-  return value.toFixed(1).replace(/\.0$/, "")
 }

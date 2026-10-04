@@ -26,7 +26,7 @@ export const navItems: NavItem[] = [
   { href: "/plan", label: "Plan", icon: CalendarDays, comingIn: 6 },
   { href: "/log", label: "Log", icon: NotebookPen, comingIn: 6 },
   { href: "/recipes", label: "Recipes", icon: ChefHat, comingIn: 5 },
-  { href: "/foods", label: "Foods", icon: Apple, comingIn: 2 },
+  { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3, comingIn: 3 },
 ]
 

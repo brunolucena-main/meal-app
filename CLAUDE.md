@@ -5,6 +5,16 @@
 Personal nutrition planner + creative cooking app. Single user, runs locally on a PC
 (`npm run dev`, http://localhost:3000). Progress and session plan: `docs/plan.md`.
 
+## Commands
+- `npm run dev`: app at http://localhost:3000
+- `npm run data:import`: rebuild USDA tables in `data/meal-app.db` (see `docs/data.md`)
+- `npm test`: unit tests (vitest); `npx tsc --noEmit` and `npx eslint src scripts` before commits
+
+## Code map
+- `src/lib/nutrition/nutrients.ts`: the 40 tracked nutrients, units, DVs, USDA id fallbacks
+- `src/lib/food/`: food groups, colors, allergen tagging (pure, tested)
+- `src/server/db/`: libSQL client + Drizzle schema; `src/server/foods.ts`: search and lookup
+
 ## Decisions (from the user, don't re-ask)
 - Desktop browser first; keep it easy to add phone support later (responsive layout,
   data access behind a server layer, DB driver that can move to a hosted libSQL later).

@@ -1,21 +1,10 @@
 import { TriangleAlert } from "lucide-react"
 import type { CSSProperties } from "react"
 
+import type { FoodGroup } from "@/lib/food/types"
 import { cn } from "@/lib/utils"
 
-/** Broad food groups. Each gets its own texture so chips differ by more than color. */
-export type FoodGroup =
-  | "leafy"
-  | "vegetable"
-  | "fruit"
-  | "legume"
-  | "grain"
-  | "nut"
-  | "dairy"
-  | "meat"
-  | "fish"
-  | "herb"
-  | "fat"
+export type { FoodGroup } from "@/lib/food/types"
 
 export type ChipFood = {
   name: string
@@ -58,6 +47,7 @@ export function swatchStyle(color: string, group: FoodGroup): CSSProperties {
     },
     herb: { backgroundImage: `radial-gradient(${ink} 0.8px, transparent 1.2px)`, backgroundSize: "3px 3px" },
     fat: { backgroundImage: `linear-gradient(180deg, rgb(255 255 255 / 0.45), transparent 65%)` },
+    other: {},
   }
 
   const texture = textures[group]
