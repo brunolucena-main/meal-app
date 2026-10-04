@@ -146,7 +146,7 @@ function CompareCell({
       </TooltipTrigger>
       <TooltipContent>
         {food.name} · {nutrient.name}: {formatAmount(value)} {nutrient.unit}
-        {pct !== null ? ` = ${Math.round(pct)}% of Daily Value` : ""}
+        {pct !== null ? ` = ${Math.round(pct)}% of daily target` : ""}
         {isBest ? (nutrient.kind === "limit" ? " · lowest here" : " · highest here") : ""}
       </TooltipContent>
     </Tooltip>

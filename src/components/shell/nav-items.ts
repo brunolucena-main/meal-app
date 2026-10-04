@@ -9,6 +9,7 @@ import {
   NotebookPen,
   Sun,
   SwatchBook,
+  Target,
   Waypoints,
   type LucideIcon,
 } from "lucide-react"
@@ -28,6 +29,7 @@ export const navItems: NavItem[] = [
   { href: "/recipes", label: "Recipes", icon: ChefHat, comingIn: 5 },
   { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3 },
+  { href: "/targets", label: "Targets", icon: Target },
 ]
 
 /** Creative section: lives in the purple block of the sidebar. */

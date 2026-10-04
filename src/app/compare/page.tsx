@@ -8,6 +8,7 @@ import { compareFoods, standouts, winCounts, type Basis, type Standout } from "@
 import { NUTRIENT_BY_KEY, NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
 import { cn } from "@/lib/utils"
 import { getFood, type FoodDetail } from "@/server/foods"
+import { getSettings } from "@/server/settings"
 import { AddFood } from "./add-food"
 import { PortionSelect } from "./portion-select"
 import { compareHref, MAX_FOODS, parseCompareState, type CompareState } from "./url"
@@ -57,7 +58,7 @@ function formatRatio(ratio: number) {
 
 export default async function ComparePage(props: PageProps<"/compare">) {
   const state = parseCompareState(await props.searchParams)
-  const loaded = await Promise.all(state.ids.map((id) => getFood(id)))
+  const [settings, ...loaded] = await Promise.all([getSettings(), ...state.ids.map((id) => getFood(id))])
   const foods = loaded.filter((f): f is FoodDetail => f !== null)
 
   const servingFor = (food: FoodDetail) => {
@@ -69,13 +70,14 @@ export default async function ComparePage(props: PageProps<"/compare">) {
   const comparison = compareFoods(
     foods.map((f) => ({ profile: f.nutrients, servingGrams: servingFor(f)?.gramWeight })),
     state.basis,
-    nutrientDefs
+    nutrientDefs,
+    settings.targets
   )
   const chips: ChipFood[] = foods.map((f) => ({
     name: f.description,
     color: f.color,
     group: f.group,
-    allergen: f.allergens[0],
+    allergen: f.allergens.find((a) => settings.allergies.includes(a)),
   }))
   const current: CompareState = { ...state, ids: foods.map((f) => f.id) }
 
@@ -131,7 +133,7 @@ export default async function ComparePage(props: PageProps<"/compare">) {
           <CompareTable
             foods={chips}
             comparison={comparison}
-            caption={`${BASIS_CAPTION[state.basis]} · % of Daily Value`}
+            caption={`${BASIS_CAPTION[state.basis]} · % of your daily targets`}
             headerExtra={(i) => {
               const food = foods[i]
               const serving = servingFor(food)

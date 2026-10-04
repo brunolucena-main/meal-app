@@ -10,6 +10,7 @@ import { formatAmount } from "@/lib/format"
 import { NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
 import { cn } from "@/lib/utils"
 import { getFood, SOURCE_LABELS } from "@/server/foods"
+import { getSettings } from "@/server/settings"
 
 async function load(props: PageProps<"/foods/[id]">) {
   const { id } = await props.params
@@ -32,8 +33,9 @@ const headline: { key: NutrientKey; label: string; unit: string }[] = [
 ]
 
 export default async function FoodPage(props: PageProps<"/foods/[id]">) {
-  const food = await load(props)
+  const [food, settings] = await Promise.all([load(props), getSettings()])
   const { portion: portionParam } = await props.searchParams
+  const flagged = food.allergens.filter((a) => settings.allergies.includes(a))
   const portion = food.portions.find((p) => String(p.id) === portionParam)
   const grams = portion ? portion.gramWeight : 100
   const factor = grams / 100
@@ -77,10 +79,10 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
             {food.nutrientCount} of {NUTRIENTS.length} nutrients reported
           </span>
         </p>
-        {food.allergens.length ? (
+        {flagged.length ? (
           <p className="flex items-center gap-2 justify-self-start rounded-2xl bg-warn-soft px-4 py-2.5 text-sm font-bold text-warn">
             <TriangleAlert className="size-4" aria-hidden />
-            Contains {food.allergens.join(", ")}, which is on your allergy list.
+            Contains {flagged.join(", ")}, which is on your allergy list.
           </p>
         ) : null}
       </header>
@@ -117,10 +119,13 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
       </section>
 
       <p className="-mb-2 text-sm text-muted-foreground">
-        All values per <span className="font-bold text-foreground">{basis}</span>. Bars show the share of the FDA Daily
-        Value; personal targets arrive in session 4.
+        All values per <span className="font-bold text-foreground">{basis}</span>. Bars show the share of your{" "}
+        <Link href="/targets" className="font-semibold text-primary hover:underline">
+          daily targets
+        </Link>
+        .
       </p>
-      <NutrientTable nutrients={food.nutrients} factor={factor} />
+      <NutrientTable nutrients={food.nutrients} factor={factor} targets={settings.targets} />
     </div>
   )
 }

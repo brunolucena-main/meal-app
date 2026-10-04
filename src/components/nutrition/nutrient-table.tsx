@@ -5,20 +5,24 @@ import {
   type NutrientGroup,
   type NutrientKey,
 } from "@/lib/nutrition/nutrients"
+import type { Targets } from "@/lib/nutrition/targets"
 import { cn } from "@/lib/utils"
 
 const GROUPS: NutrientGroup[] = ["macros", "fats", "minerals", "vitamins"]
 
 /**
  * Every tracked nutrient for one food, scaled by `factor` (grams / 100). Shows the amount, the
- * share of the Daily Value and a bar. Nutrients the source doesn't report say "no data".
+ * share of the daily target (personal target, else Daily Value) and a bar. Nutrients the source
+ * doesn't report say "no data".
  */
 export function NutrientTable({
   nutrients,
   factor,
+  targets = {},
 }: {
   nutrients: Partial<Record<NutrientKey, number>>
   factor: number
+  targets?: Targets
 }) {
   return (
     <div className="grid gap-4 lg:grid-cols-2">
@@ -40,14 +44,14 @@ export function NutrientTable({
                 <tr>
                   <th scope="col">Nutrient</th>
                   <th scope="col">Amount</th>
-                  <th scope="col">Percent of Daily Value</th>
+                  <th scope="col">Percent of daily target</th>
                 </tr>
               </thead>
               <tbody>
                 {defs.map((n) => {
                   const raw = nutrients[n.key]
                   const value = raw === undefined ? undefined : raw * factor
-                  const dv = "dv" in n ? n.dv : undefined
+                  const dv = targets[n.key] ?? ("dv" in n ? n.dv : undefined)
                   const pct = value !== undefined && dv ? (value / dv) * 100 : undefined
                   return (
                     <tr key={n.key} className="border-t border-border">
