@@ -27,7 +27,7 @@ export const navItems: NavItem[] = [
   { href: "/", label: "Today", icon: Sun, comingIn: 6 },
   { href: "/plan", label: "Plan", icon: CalendarDays, comingIn: 6 },
   { href: "/log", label: "Log", icon: NotebookPen, comingIn: 6 },
-  { href: "/recipes", label: "Recipes", icon: ChefHat, comingIn: 5 },
+  { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3 },
   { href: "/best", label: "Best sources", icon: Medal },

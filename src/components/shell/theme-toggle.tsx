@@ -1,11 +1,11 @@
 "use client"
 
 import { Monitor, Moon, Sun } from "lucide-react"
-import { useTheme } from "next-themes"
-import { useSyncExternalStore } from "react"
+import { useEffect, useSyncExternalStore } from "react"
 
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { cn } from "@/lib/utils"
+import { applyTheme, THEME_KEY, type ThemeChoice } from "./theme"
 
 const options = [
   { value: "light", label: "Light", icon: Sun },
@@ -13,22 +13,56 @@ const options = [
   { value: "system", label: "System", icon: Monitor },
 ] as const
 
-function subscribeNoop() {
-  return () => {}
+const CHANGE = "themechange"
+
+function readChoice(): ThemeChoice {
+  try {
+    const v = localStorage.getItem(THEME_KEY)
+    return v === "light" || v === "dark" ? v : "system"
+  } catch {
+    return "system"
+  }
+}
+
+function subscribe(onChange: () => void) {
+  window.addEventListener(CHANGE, onChange)
+  window.addEventListener("storage", onChange)
+  return () => {
+    window.removeEventListener(CHANGE, onChange)
+    window.removeEventListener("storage", onChange)
+  }
+}
+
+function setChoice(choice: ThemeChoice) {
+  try {
+    localStorage.setItem(THEME_KEY, choice)
+  } catch {
+    // Storage blocked: the choice still applies for this page view.
+  }
+  applyTheme(choice)
+  window.dispatchEvent(new Event(CHANGE))
 }
 
 export function ThemeToggle({ tone = "default" }: { tone?: "default" | "creative" }) {
-  const { theme, setTheme } = useTheme()
-  // The stored theme is only known in the browser; render no selection on the server.
-  const mounted = useSyncExternalStore(subscribeNoop, () => true, () => false)
+  // The saved choice only exists in the browser; render no selection on the server.
+  const theme = useSyncExternalStore(subscribe, readChoice, () => null)
+
+  // Follow the OS setting live while on "system".
+  useEffect(() => {
+    if (theme !== "system") return
+    const media = matchMedia("(prefers-color-scheme: dark)")
+    const onChange = () => applyTheme("system")
+    media.addEventListener("change", onChange)
+    return () => media.removeEventListener("change", onChange)
+  }, [theme])
 
   return (
     <ToggleGroup
       aria-label="Theme"
-      value={mounted && theme ? [theme] : []}
+      value={theme ? [theme] : []}
       onValueChange={(value) => {
-        const next = value[0]
-        if (next) setTheme(next)
+        const next = value[0] as ThemeChoice | undefined
+        if (next) setChoice(next)
       }}
       className="w-full"
     >

@@ -46,7 +46,8 @@ function toSummary(r: Row): FoodSummary {
  *
  * Ranking: plain ingredient entries first. USDA names them "Spinach, raw" or, for fish, nuts,
  * beans, cheeses and oils, "Fish, salmon, ..." / "Nuts, almonds, ...", so the first word counts as
- * plain when it opens the name or its second part. Then raw over prepared, then names starting
+ * plain when it is the whole first or second part of the name ("milk" matches "Milk, whole",
+ * not "Fish, milkfish"). Then raw over prepared, then names starting
  * with the word, then text relevance, then shorter names.
  */
 export async function searchFoods(query: string, limit = 40): Promise<FoodSummary[]> {
@@ -62,8 +63,10 @@ export async function searchFoods(query: string, limit = 40): Promise<FoodSummar
       ORDER BY
         (
           lower(f.description) LIKE :plain OR lower(f.description) LIKE :plural
-          OR (instr(f.description, ', ') > 0
-              AND substr(lower(f.description), instr(f.description, ', ') + 2, length(:word)) = :word)
+          OR (instr(f.description, ', ') > 0 AND (
+            substr(lower(f.description), instr(f.description, ', ') + 2) || ',' LIKE :plain
+            OR substr(lower(f.description), instr(f.description, ', ') + 2) || ',' LIKE :plural
+          ))
         ) DESC,
         (lower(f.description) LIKE '%raw%') DESC,
         (lower(f.description) LIKE :starts) DESC,

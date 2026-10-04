@@ -11,7 +11,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 2 | USDA data + food search | Done |
 | 3 | Comparison engine + Compare screen | Done |
 | 4 | Targets, substitutes, goal ranking, allergy filter | Done |
-| 5 | Recipes + reusable meals | |
+| 5 | Recipes + reusable meals | Done |
 | 6 | Planner, log, shopping list | |
 | 7 | Creative I: FlavorGraph import + pairing explorer | |
 | 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | |
@@ -93,3 +93,15 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Allergy filter: hazelnut-tagged foods hidden from substitutes and best sources (count shown),
   flagged on food and compare pages.
 - Open questions for Bruno: docs/questions.md.
+
+### Session 5
+- Recipes and reusable meals (one table, `kind`), ingredients in grams (Drizzle migration 0001).
+- `src/lib/nutrition/recipe.ts`: totals by weight, per serving, per 100 g of the cooked dish
+  (optional cooked weight); totals are marked partial (shown as >=) when an ingredient lacks
+  data, with the ingredients named. Tested.
+- /recipes list (meals and recipes, allergen flags) and /recipes/[id] editor: details form,
+  ingredient rows with grams and quick USDA portions, add via the shared FoodPicker, live
+  nutrition per serving against personal targets.
+- Fixes: migrations re-run when the journal changes (new migration while dev server runs);
+  replaced next-themes with a small built-in theme script (React 19.2 warned about its
+  inline script); search requires whole words in name parts ("milk" no longer finds milkfish).

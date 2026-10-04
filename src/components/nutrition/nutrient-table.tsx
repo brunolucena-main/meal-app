@@ -19,13 +19,18 @@ export function NutrientTable({
   nutrients,
   factor,
   targets = {},
+  partial = {},
+  className,
 }: {
   nutrients: Partial<Record<NutrientKey, number>>
   factor: number
   targets?: Targets
+  /** Recipes: nutrients where some ingredients lack data, so the total is a minimum. */
+  partial?: Partial<Record<NutrientKey, string[]>>
+  className?: string
 }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
+    <div className={cn("grid gap-4 lg:grid-cols-2", className)}>
       {GROUPS.map((group) => {
         const defs = NUTRIENTS.filter((n) => n.group === group)
         const reported = defs.filter((n) => nutrients[n.key] !== undefined).length
@@ -67,7 +72,11 @@ export function NutrientTable({
                         </td>
                       ) : (
                         <>
-                          <td className="py-2 pr-3 text-right font-bold whitespace-nowrap tabular-nums">
+                          <td
+                            className="py-2 pr-3 text-right font-bold whitespace-nowrap tabular-nums"
+                            title={partial[n.key] ? `At least this much: no data for ${partial[n.key]!.join(", ")}` : undefined}
+                          >
+                            {partial[n.key] ? <span className="text-warn">≥ </span> : null}
                             {formatAmount(value)} <span className="text-xs font-semibold text-muted-foreground">{n.unit}</span>
                           </td>
                           <td className="w-[38%] py-2 pr-5">

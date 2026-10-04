@@ -1,6 +1,7 @@
 import { createClient } from "@libsql/client"
 import { drizzle } from "drizzle-orm/libsql"
 
+import { statSync } from "node:fs"
 import path from "node:path"
 
 import { migrate } from "drizzle-orm/libsql/migrator"
@@ -22,10 +23,18 @@ if (process.env.NODE_ENV !== "production") globalForDb.libsql = libsql
 
 export const db = drizzle({ client: libsql, schema: { ...schema, ...userSchema } })
 
-const globalForMigrations = globalThis as unknown as { migrated?: Promise<void> }
+const MIGRATIONS = path.join(process.cwd(), "drizzle")
+const globalForMigrations = globalThis as unknown as { migrated?: { key: number; done: Promise<void> } }
 
-/** Applies pending user-table migrations once per server process. Await before touching user data. */
+/**
+ * Applies pending user-table migrations. Runs once per server process, and again when the
+ * migration journal changes (a new migration added while the dev server is running).
+ * Await before touching user data.
+ */
 export function ensureMigrated(): Promise<void> {
-  globalForMigrations.migrated ??= migrate(db, { migrationsFolder: path.join(process.cwd(), "drizzle") })
-  return globalForMigrations.migrated
+  const key = statSync(path.join(MIGRATIONS, "meta", "_journal.json")).mtimeMs
+  if (globalForMigrations.migrated?.key !== key) {
+    globalForMigrations.migrated = { key, done: migrate(db, { migrationsFolder: MIGRATIONS }) }
+  }
+  return globalForMigrations.migrated.done
 }

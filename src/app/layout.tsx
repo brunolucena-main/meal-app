@@ -2,7 +2,7 @@ import type { Metadata } from "next"
 import { Manrope } from "next/font/google"
 
 import { AppShell } from "@/components/shell/app-shell"
-import { ThemeProvider } from "@/components/theme-provider"
+import { themeInitScript } from "@/components/shell/theme"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import "./globals.css"
 
@@ -24,12 +24,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${manrope.variable} h-full antialiased`}
     >
+      <head>
+        {/* Sets light/dark before first paint, so the page never flashes the wrong theme. */}
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
       <body className="min-h-full">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-          <TooltipProvider>
-            <AppShell>{children}</AppShell>
-          </TooltipProvider>
-        </ThemeProvider>
+        <TooltipProvider>
+          <AppShell>{children}</AppShell>
+        </TooltipProvider>
       </body>
     </html>
   )
