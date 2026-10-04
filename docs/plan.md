@@ -9,7 +9,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 |---|---|---|
 | 1 | Project setup + design system | Done |
 | 2 | USDA data + food search | Done |
-| 3 | Comparison engine + Compare screen | |
+| 3 | Comparison engine + Compare screen | Done |
 | 4 | Targets, substitutes, goal ranking, allergy filter | |
 | 5 | Recipes + reusable meals | |
 | 6 | Planner, log, shopping list | |
@@ -68,3 +68,12 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - /foods/[id]: full profile per 100 g or per USDA portion, grouped tables, % DV bars,
   "no data" for missing values, allergen warning, link to the FDC page.
 - Unit tests (vitest) for nutrient resolution, grouping/colors and allergen tags.
+
+### Session 3
+- `src/lib/nutrition/compare.ts`: basis factors (per 100 g / per 100 kcal / per serving), best value
+  per nutrient (goal = highest, limit = lowest, 0.5% tie band, missing never wins), % of DV or
+  personal targets, win counts over nutrients every food reports, per-food standouts
+  ("2.6x the calcium", only where the leader has >= 5% DV and >= 1.5x the runner-up). Tested.
+- /compare: up to 4 foods in the URL (?ids=&basis=&portions=&all=1), search-as-you-type picker
+  (GET /api/foods/search), basis tabs, portion picker per food for "per serving", summary card,
+  key nutrients or all 40, quick-start pairs. Food pages have a Compare button.

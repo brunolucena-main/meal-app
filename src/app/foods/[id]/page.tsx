@@ -1,9 +1,10 @@
-import { ArrowLeft, ExternalLink, TriangleAlert } from "lucide-react"
+import { ArrowLeft, Columns3, ExternalLink, TriangleAlert } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
+import { buttonVariants } from "@/components/ui/button"
 import { NutrientTable } from "@/components/nutrition/nutrient-table"
 import { formatAmount } from "@/lib/format"
 import { NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
@@ -51,7 +52,11 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
             food={{ name: food.description, color: food.color, group: food.group }}
             className="size-12 rounded-[16px_16px_16px_5px]"
           />
-          <h1 className="text-2xl font-extrabold tracking-tight md:text-3xl">{food.description}</h1>
+          <h1 className="flex-1 text-2xl font-extrabold tracking-tight md:text-3xl">{food.description}</h1>
+          <Link href={`/compare?ids=${food.id}`} className={buttonVariants({ variant: "outline" })}>
+            <Columns3 aria-hidden />
+            Compare
+          </Link>
         </div>
         <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm text-muted-foreground">
           {food.category ? <span>{food.category}</span> : null}

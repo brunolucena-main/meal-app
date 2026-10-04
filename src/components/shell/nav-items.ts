@@ -27,7 +27,7 @@ export const navItems: NavItem[] = [
   { href: "/log", label: "Log", icon: NotebookPen, comingIn: 6 },
   { href: "/recipes", label: "Recipes", icon: ChefHat, comingIn: 5 },
   { href: "/foods", label: "Foods", icon: Apple },
-  { href: "/compare", label: "Compare", icon: Columns3, comingIn: 3 },
+  { href: "/compare", label: "Compare", icon: Columns3 },
 ]
 
 /** Creative section: lives in the purple block of the sidebar. */

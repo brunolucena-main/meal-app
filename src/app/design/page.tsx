@@ -9,7 +9,7 @@ import { statusForGoal, statusForLimit, TargetBar } from "@/components/nutrition
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { CompareTable } from "@/components/nutrition/compare-table"
 import { CreativeSpecimen } from "./creative-specimen"
-import { chipExamples, compareFoods, compareGroups } from "./examples"
+import { chipExamples, compareFoods, exampleComparison } from "./examples"
 import { Swatch } from "./swatch"
 
 export const metadata: Metadata = { title: "Design system · Meal App" }
@@ -253,8 +253,8 @@ export default function DesignPage() {
       >
         <CompareTable
           foods={compareFoods}
-          groups={compareGroups}
-          basis="Per 100 g raw · % of Daily Value · example values"
+          comparison={exampleComparison}
+          caption="Per 100 g raw · % of Daily Value · example values"
         />
       </Section>
 
