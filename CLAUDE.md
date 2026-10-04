@@ -21,7 +21,10 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
   cards (rounded-3xl), thick bars, plain-language status (always word + color).
 - Creative section: SAME look as the rest of the app (same cards, chips, bars), on a
   stylized (flat, wallpaper-like) starry pattern over a very dark purple (`--night`), the same
-  color the sidebar's purple section fades into at the bottom; no divider between them (`src/components/creative/starry-sky.tsx`,
+  color the sidebar's purple section fades into at the bottom; no divider between them.
+  Both paint the same viewport-anchored `.night-gradient` (background-attachment: fixed),
+  so they line up while scrolling. Phone readiness (session 9): iOS Safari ignores fixed
+  backgrounds, so check this there (`src/components/creative/starry-sky.tsx`,
   `CreativeSurface`). On creative routes the sky fills the whole main area (AppShell's
   `creativeRoutes`). The sidebar's lower part is purple, full width down to the bottom, and
   holds the creative links plus tools. Violet (`bg-violet`) is the creative accent for bars.

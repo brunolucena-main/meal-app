@@ -88,12 +88,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div
-          className="flex flex-1 flex-col px-4 pt-4 pb-5"
-          style={{
-            background: "linear-gradient(180deg, var(--creative) 0%, var(--creative) 12%, var(--night) 80%)",
-          }}
-        >
+        <div className="night-gradient flex flex-1 flex-col px-4 pt-4 pb-5">
           <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
             <span
               id="creative-nav-h"

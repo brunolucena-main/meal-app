@@ -55,3 +55,5 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Revision 6: sidebar purple fades to very dark purple at the bottom (behind the theme
   picker); creative background is a flat stylized pattern on that same dark purple; no
   divider beside the purple part. Opposites reworked as taste contrast.
+- Revision 7: main creative background follows the sidebar's purple-to-night gradient
+  (one shared viewport-anchored gradient).

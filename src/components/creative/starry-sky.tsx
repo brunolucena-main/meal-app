@@ -44,16 +44,33 @@ const large = tile(380, [
   cross(330, 330, 5, soft),
 ])
 
-const skyStyle: CSSProperties = {
-  backgroundColor: "var(--night)",
+const patternStyle: CSSProperties = {
   backgroundImage: `${large}, ${small}`,
   backgroundSize: "380px 380px, 240px 240px",
   backgroundPosition: "60px 20px, 0 0",
 }
 
-export function StarrySky({ className }: { className?: string }) {
+/**
+ * `anchored` (default) uses the viewport-anchored gradient shared with the sidebar. Framed
+ * previews pass `anchored={false}` so the gradient fits their own box instead.
+ */
+export function StarrySky({ className, anchored = true }: { className?: string; anchored?: boolean }) {
   return (
-    <div aria-hidden className={cn("pointer-events-none absolute inset-0 -z-10", className)} style={skyStyle} />
+    <div
+      aria-hidden
+      className={cn(
+        "pointer-events-none absolute inset-0 -z-10 bg-night",
+        anchored && "night-gradient",
+        className
+      )}
+      style={
+        anchored
+          ? undefined
+          : { backgroundImage: "linear-gradient(180deg, var(--creative) 0%, var(--night) 70%)" }
+      }
+    >
+      <div className="absolute inset-0" style={patternStyle} />
+    </div>
   )
 }
 
@@ -61,7 +78,7 @@ export function StarrySky({ className }: { className?: string }) {
 export function CreativeSurface({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
     <div className={cn("relative isolate overflow-hidden text-on-night", className)}>
-      <StarrySky />
+      <StarrySky anchored={false} />
       {children}
     </div>
   )
