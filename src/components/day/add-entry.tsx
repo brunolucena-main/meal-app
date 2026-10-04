@@ -4,20 +4,28 @@ import { useState, useTransition } from "react"
 
 import { addFoodEntry, addRecipeEntry } from "@/app/day-actions"
 import { FoodPicker } from "@/components/food/food-picker"
+import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { Button } from "@/components/ui/button"
+import { formatAmount } from "@/lib/format"
 import type { EntryStatus, Slot } from "@/lib/nutrition/day"
+import type { RecentItem } from "@/server/days"
 
-/** Add a food (100 g to start, adjust in the row) or a saved meal/recipe to a slot. */
+/**
+ * Add to a slot: one tap on a recent item (at its last amount), a food from search (100 g to
+ * start, adjust in the row), or a saved meal or recipe.
+ */
 export function AddEntry({
   date,
   slot,
   status,
   recipes,
+  recent = [],
 }: {
   date: string
   slot: Slot
   status: EntryStatus
   recipes: { id: number; name: string; kind: "recipe" | "meal" }[]
+  recent?: RecentItem[]
 }) {
   const [pending, startTransition] = useTransition()
   const [recipeId, setRecipeId] = useState("")
@@ -25,6 +33,33 @@ export function AddEntry({
 
   return (
     <div className="grid gap-2 pt-1">
+      {recent.length ? (
+        <div className="flex flex-wrap items-center gap-1.5" aria-label="Recent">
+          <span className="text-[11px] font-bold tracking-[0.08em] text-muted-foreground uppercase">Recent</span>
+          {recent.map((r) => (
+            <button
+              key={`${r.kind}-${r.refId}`}
+              type="button"
+              disabled={pending}
+              onClick={() =>
+                startTransition(() =>
+                  r.kind === "food"
+                    ? addFoodEntry(date, slot, status, r.refId, r.amount)
+                    : addRecipeEntry(date, slot, status, r.refId, r.amount)
+                )
+              }
+              title={`Add ${r.name}`}
+              className="inline-flex max-w-48 items-center gap-1.5 rounded-full border border-border bg-card py-0.5 pr-2.5 pl-0.5 text-xs font-semibold hover:bg-muted"
+            >
+              <IngredientSwatch food={{ name: r.name, color: r.color, group: r.group }} className="size-[18px]" />
+              <span className="truncate">{r.name.split(",")[0]}</span>
+              <span className="shrink-0 text-muted-foreground tabular-nums">
+                {r.kind === "food" ? `${formatAmount(r.amount)} g` : `×${formatAmount(r.amount)}`}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
       <FoodPicker
         id={`add-${date}-${slot}`}
         label={`Add a food to ${slot}`}

@@ -152,6 +152,15 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   background used by the creative gradient (falls back to a scrolling gradient, still fine).
 - README rewritten with setup, data import and development commands.
 
+### After session 9 (hardening)
+- Production build passes (`npm run build`); data pages render per request.
+- Recipes in use on planned or logged days can't be deleted (keeps logs accurate).
+- Backup restores up to 25 MB (server action body limit raised).
+- Integration tests against a temp copy of the database (search, recipes, day totals,
+  shopping list, delete guard, backup round trip). 58 tests total.
+- Today and day pages: "Recent" row under each slot re-adds a recent food or meal at its last
+  amount in one click.
+
 ## Ideas for later
 - Your real profile on the Targets page (see docs/questions.md).
 - Barcode / branded foods (Open Food Facts) if packaged foods matter.

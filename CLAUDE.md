@@ -11,9 +11,22 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 - `npm test`: unit tests (vitest); `npx tsc --noEmit` and `npx eslint src scripts` before commits
 
 ## Code map
-- `src/lib/nutrition/nutrients.ts`: the 40 tracked nutrients, units, DVs, USDA id fallbacks
-- `src/lib/food/`: food groups, colors, allergen tagging (pure, tested)
-- `src/server/db/`: libSQL client + Drizzle schema; `src/server/foods.ts`: search and lookup
+- `src/lib/` (pure, unit-tested, no DB):
+  - `nutrition/nutrients.ts` 40 nutrients, units, DVs, USDA id fallbacks
+  - `nutrition/compare.ts` bases, best values, standouts; `similarity.ts` substitutes;
+    `ranking.ts` best sources; `targets.ts` profile -> targets (DRIs); `recipe.ts`; `day.ts`
+  - `food/` groups, colors, allergen tags; `flavor/pairing.ts` aroma overlap; `flavor/tastes.ts`
+    taste profiles + balancing rules (opposites)
+- `src/server/` (DB access): `db/` libSQL + Drizzle (USDA schema + user schema with migrations
+  in /drizzle, applied lazily by `ensureMigrated`), `foods.ts` search, `catalog.ts` all food
+  profiles in memory, `settings.ts`, `recipes.ts`, `days.ts` (entries, shopping), `backup.ts`,
+  `flavor.ts` (FlavorGraph queries), `flavor-graph.ts` (in-memory graph with variants folded:
+  opposites, bridges, swaps, map). In-memory caches live on globalThis: restart the dev server
+  after re-importing data or changing taste rules.
+- `src/app/`: pages per nav item; server actions in `actions.ts` files and `day-actions.ts`.
+- `scripts/`: `import-usda.ts`, `import-flavorgraph.ts`, `flavor-overrides.json`.
+- Tests: `*.test.ts` next to the code; `src/server/server.int.test.ts` runs against a temp
+  copy of the database.
 
 ## Decisions (from the user, don't re-ask)
 - Desktop browser first; keep it easy to add phone support later (responsive layout,

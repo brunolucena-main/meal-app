@@ -117,6 +117,44 @@ export async function loggedDates(limit = 30): Promise<string[]> {
   return result.rows.map((r) => String(r.date))
 }
 
+export type RecentItem = {
+  kind: "food" | "recipe"
+  refId: number
+  name: string
+  color: string
+  group: FoodGroup
+  /** Last used amount: grams for foods, servings for recipes. */
+  amount: number
+}
+
+/** Foods and meals used most recently (latest amount each), for one-tap re-adding. */
+export async function recentItems(limit = 8): Promise<RecentItem[]> {
+  await ensureMigrated()
+  const result = await libsql.execute({
+    sql: `SELECT food_id, recipe_id, grams, servings FROM entries e
+          WHERE id = (SELECT id FROM entries x
+                      WHERE x.food_id IS e.food_id AND x.recipe_id IS e.recipe_id
+                      ORDER BY created_at DESC, id DESC LIMIT 1)
+          ORDER BY created_at DESC, id DESC
+          LIMIT ?`,
+    args: [limit],
+  })
+  if (!result.rows.length) return []
+  const catalog = new Map((await getCatalog()).map((f) => [f.id, f]))
+  const recipes = new Map((await listRecipes()).map((r) => [r.id, r]))
+  const out: RecentItem[] = []
+  for (const r of result.rows) {
+    if (r.food_id !== null) {
+      const food = catalog.get(Number(r.food_id))
+      if (food) out.push({ kind: "food", refId: food.id, name: food.description, color: food.color, group: food.group, amount: Number(r.grams) })
+    } else if (r.recipe_id !== null) {
+      const recipe = recipes.get(Number(r.recipe_id))
+      if (recipe) out.push({ kind: "recipe", refId: recipe.id, name: recipe.name, color: RECIPE_COLOR, group: "other", amount: Number(r.servings) })
+    }
+  }
+  return out
+}
+
 export async function addEntry(input: {
   date: string
   slot: Slot

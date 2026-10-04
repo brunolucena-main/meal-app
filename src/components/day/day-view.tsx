@@ -9,7 +9,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
 import { formatAmount } from "@/lib/format"
 import { addDays, largestGaps, parseIsoDate, SLOTS, type EntryStatus } from "@/lib/nutrition/day"
 import { NUTRIENT_BY_KEY, type NutrientKey } from "@/lib/nutrition/nutrients"
-import type { DayView as Day } from "@/server/days"
+import type { DayView as Day, RecentItem } from "@/server/days"
 import type { Settings } from "@/server/settings"
 
 const BARS: NutrientKey[] = ["protein", "fiber", "carbs", "fat"]
@@ -33,8 +33,10 @@ export function DayView({
   recipes,
   defaultStatus,
   hrefFor,
+  recent = [],
 }: {
   day: Day
+  recent?: RecentItem[]
   today: string
   settings: Settings
   recipes: { id: number; name: string; kind: "recipe" | "meal" }[]
@@ -165,7 +167,7 @@ export function DayView({
               ) : (
                 <p className="py-2 text-sm text-muted-foreground">Nothing here yet.</p>
               )}
-              <AddEntry date={day.date} slot={slot.value} status={defaultStatus} recipes={recipes} />
+              <AddEntry date={day.date} slot={slot.value} status={defaultStatus} recipes={recipes} recent={recent} />
             </section>
           )
         })}
