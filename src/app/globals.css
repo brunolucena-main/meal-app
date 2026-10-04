@@ -1,26 +1,219 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+@custom-variant dark (&:is(.dark *));
+
+/*
+  Design system
+  - Base ("Calm Coach"): soft blue-grey ground, white rounded cards, thick bars,
+    Manrope with tabular numbers. Used for planning, logging, comparing.
+  - Creative register (Editorial x Market): Newsreader headlines, Bricolage
+    Grotesque for big numbers and chips, produce-colored tonal containers.
+    Scoped under [data-register="creative"].
+*/
 
 @theme inline {
+  --font-sans: var(--font-manrope), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-heading: var(--font-manrope), ui-sans-serif, system-ui, "Segoe UI", sans-serif;
+  --font-display: var(--font-newsreader), Georgia, "Times New Roman", serif;
+  --font-expressive: var(--font-bricolage), var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Bars and tracks */
+  --color-track: var(--track);
+
+  /* Comparison series: up to four foods side by side */
+  --color-series-1: var(--series-1);
+  --color-series-2: var(--series-2);
+  --color-series-3: var(--series-3);
+  --color-series-4: var(--series-4);
+  --color-series-1-ink: var(--series-1-ink);
+  --color-series-2-ink: var(--series-2-ink);
+  --color-series-3-ink: var(--series-3-ink);
+  --color-series-4-ink: var(--series-4-ink);
+
+  /* Target status */
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+
+  /* Creative register: produce tonal palette */
+  --color-leaf: var(--leaf);
+  --color-leaf-container: var(--leaf-container);
+  --color-on-leaf: var(--on-leaf);
+  --color-tomato: var(--tomato);
+  --color-tomato-container: var(--tomato-container);
+  --color-on-tomato: var(--on-tomato);
+  --color-squash: var(--squash);
+  --color-squash-container: var(--squash-container);
+  --color-on-squash: var(--on-squash);
+  --color-beet: var(--beet);
+  --color-beet-container: var(--beet-container);
+  --color-on-beet: var(--on-beet);
+  --color-paper: var(--paper);
+  --color-ink: var(--ink);
+
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.5);
+  --radius-2xl: calc(var(--radius) * 2);
+  --radius-3xl: calc(var(--radius) * 2.5);
+  --radius-4xl: calc(var(--radius) * 3);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+:root {
+  --radius: 0.75rem;
+
+  --background: #eef1f6;
+  --foreground: #1b1f2a;
+  --card: #ffffff;
+  --card-foreground: #1b1f2a;
+  --popover: #ffffff;
+  --popover-foreground: #1b1f2a;
+  --primary: #0a7a6a;
+  --primary-foreground: #ffffff;
+  --secondary: #e3e7ef;
+  --secondary-foreground: #1b1f2a;
+  --muted: #e9edf3;
+  --muted-foreground: #5b6477;
+  --accent: #e6f4f1;
+  --accent-foreground: #0a5c50;
+  --destructive: #c8372a;
+  --border: #dde2ea;
+  --input: #d3d9e3;
+  --ring: #0e9f8a;
+  --track: #e3e7ef;
+
+  --series-1: #0e9f8a;
+  --series-2: #e8573a;
+  --series-3: #5b6cf0;
+  --series-4: #d99a00;
+  --series-1-ink: #0a7a6a;
+  --series-2-ink: #be3f25;
+  --series-3-ink: #4352d6;
+  --series-4-ink: #8f6500;
+
+  --good: #1f8f52;
+  --good-soft: #def3e6;
+  --warn: #b26b00;
+  --warn-soft: #fbedd3;
+  --bad: #c8372a;
+  --bad-soft: #fbe2df;
+
+  --leaf: #2c7a2e;
+  --leaf-container: #cbefc4;
+  --on-leaf: #0d3b12;
+  --tomato: #d9481f;
+  --tomato-container: #ffdcd0;
+  --on-tomato: #5a1606;
+  --squash: #e0a400;
+  --squash-container: #ffefb3;
+  --on-squash: #4a3600;
+  --beet: #9b2242;
+  --beet-container: #f9d9e2;
+  --on-beet: #4a0b1d;
+  --paper: #f7f6f2;
+  --ink: #17140f;
+}
+
+.dark {
+  --background: #0f121a;
+  --foreground: #edf0f6;
+  --card: #181c27;
+  --card-foreground: #edf0f6;
+  --popover: #1d2230;
+  --popover-foreground: #edf0f6;
+  --primary: #34cdb6;
+  --primary-foreground: #06201c;
+  --secondary: #272c3a;
+  --secondary-foreground: #edf0f6;
+  --muted: #1f2431;
+  --muted-foreground: #98a2b6;
+  --accent: #15322e;
+  --accent-foreground: #a9eee3;
+  --destructive: #ff7a68;
+  --border: #2a3040;
+  --input: #343b4d;
+  --ring: #34cdb6;
+  --track: #272c3a;
+
+  --series-1: #34cdb6;
+  --series-2: #ff8467;
+  --series-3: #8f9bff;
+  --series-4: #f2c14e;
+  --series-1-ink: #34cdb6;
+  --series-2-ink: #ff8467;
+  --series-3-ink: #a5aeff;
+  --series-4-ink: #f2c14e;
+
+  --good: #5fd08f;
+  --good-soft: #163324;
+  --warn: #f2b54e;
+  --warn-soft: #3a2c12;
+  --bad: #ff7a68;
+  --bad-soft: #3d1c19;
+
+  --leaf: #8fd88a;
+  --leaf-container: #1e4a21;
+  --on-leaf: #cbefc4;
+  --tomato: #ff8a65;
+  --tomato-container: #5b2414;
+  --on-tomato: #ffdcd0;
+  --squash: #f7cb45;
+  --squash-container: #4a3a06;
+  --on-squash: #ffefb3;
+  --beet: #e57a95;
+  --beet-container: #4f1828;
+  --on-beet: #f9d9e2;
+  --paper: #15130f;
+  --ink: #f1ede6;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "tnum" 1;
+  }
+  h1, h2, h3 {
+    text-wrap: balance;
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
 }
