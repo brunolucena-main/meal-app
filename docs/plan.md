@@ -24,3 +24,8 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   (light + dark), fonts, app shell with sidebar, `/design` style guide part 1.
 - Revision: lighter, livelier light theme (teal-tinted near-white ground, more saturated
   series colors, soft tints, white cards with shadow, darker text).
+- Revision 2: neutral near-white background, darker body and secondary text.
+- Chunk 2: ingredient chips (color + food-group texture, allergen flag in words),
+  compact comparison table (amount, % DV, thin series bars, best-value arrows, tooltips,
+  "no data" never counted as zero). Series colors validated for color-blind separation
+  in both themes.

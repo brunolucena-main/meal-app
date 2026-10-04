@@ -41,7 +41,8 @@
   /* Bars and tracks */
   --color-track: var(--track);
 
-  /* Comparison series: up to four foods side by side */
+  /* Comparison series: up to four foods side by side. Validated with the dataviz
+     palette checker (CVD separation, lightness band, 3:1 contrast) in both themes. */
   --color-series-1: var(--series-1);
   --color-series-2: var(--series-2);
   --color-series-3: var(--series-3);
@@ -170,10 +171,10 @@
   --ring: #34cdb6;
   --track: #272c3a;
 
-  --series-1: #34cdb6;
-  --series-2: #ff8467;
-  --series-3: #8f9bff;
-  --series-4: #f2c14e;
+  --series-1: #14a18b;
+  --series-2: #e85d40;
+  --series-3: #737ff3;
+  --series-4: #b98a18;
   --series-1-ink: #34cdb6;
   --series-2-ink: #ff8467;
   --series-3-ink: #a5aeff;

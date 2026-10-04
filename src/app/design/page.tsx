@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { statusForGoal, statusForLimit, TargetBar } from "@/components/nutrition/target-bar"
+import { IngredientChip } from "@/components/food/ingredient-chip"
+import { CompareTable } from "@/components/nutrition/compare-table"
+import { chipExamples, compareFoods, compareGroups } from "./examples"
 import { Swatch } from "./swatch"
 
 export const metadata: Metadata = { title: "Design system · Meal App" }
@@ -215,6 +218,41 @@ export default function DesignPage() {
             />
           </Panel>
         </div>
+      </Section>
+
+      <Section
+        id="chips"
+        title="Ingredient chips"
+        description="A representative color plus a texture per food group, so two green leaves still look different. Allergens are flagged in words."
+      >
+        <Panel className="grid gap-5">
+          <div className="flex flex-wrap gap-2">
+            {chipExamples.map((food) => (
+              <IngredientChip key={food.name} food={food} />
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {chipExamples.slice(0, 8).map((food) => (
+              <IngredientChip key={food.name} food={food} size="sm" />
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Textures: leafy diagonal, vegetable vertical, fruit highlight, legume dots, grain lines, nut speckle, dairy
+            ring, meat bands, fish crosshatch, herb fine dots, fat sheen.
+          </p>
+        </Panel>
+      </Section>
+
+      <Section
+        id="compare"
+        title="Comparison table"
+        description="The compact view for many nutrients at once. Hover or focus a cell for the exact figure. Arrows mark the best value per row (lowest for limits). Missing data is shown as missing, never as zero."
+      >
+        <CompareTable
+          foods={compareFoods}
+          groups={compareGroups}
+          basis="Per 100 g raw · % of Daily Value · example values"
+        />
       </Section>
     </div>
   )
