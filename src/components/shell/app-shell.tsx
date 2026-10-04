@@ -74,9 +74,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col md:sticky md:top-0 md:h-dvh md:w-60">
-        {/* Only the white part carries a divider; the purple part melts into the night sky. */}
-        <div className="grid gap-6 border-b border-border bg-card px-4 py-5 md:border-r md:border-b-0">
+      {/*
+        Where white meets purple the corner is rounded. The aside's own background shows through
+        the curve: purple on creative pages (the white block curves into the night), light on the
+        others (the purple section curves into the page).
+      */}
+      <aside
+        className={cn(
+          "flex shrink-0 flex-col md:sticky md:top-0 md:h-dvh md:w-60",
+          onCreative ? "night-gradient bg-night" : "bg-background"
+        )}
+      >
+        <div
+          className={cn(
+            "grid gap-6 border-b border-border bg-card px-4 py-5 md:border-b-0",
+            onCreative ? "md:rounded-br-[28px]" : "md:border-r"
+          )}
+        >
           <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
             <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
             Meal App
@@ -88,7 +102,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div className="night-gradient flex flex-1 flex-col px-4 pt-4 pb-5">
+        <div
+          className={cn("night-gradient flex flex-1 flex-col px-4 pt-4 pb-5", !onCreative && "md:rounded-tr-[28px]")}
+        >
           <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
             <span
               id="creative-nav-h"

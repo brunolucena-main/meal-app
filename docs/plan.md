@@ -57,3 +57,5 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   divider beside the purple part. Opposites reworked as taste contrast.
 - Revision 7: main creative background follows the sidebar's purple-to-night gradient
   (one shared viewport-anchored gradient).
+- Revision 8: rounded corners (28px) where white meets purple: white sidebar block curves into
+  the night on creative pages; purple section curves into the light page elsewhere.
