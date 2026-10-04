@@ -29,3 +29,6 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   compact comparison table (amount, % DV, thin series bars, best-value arrows, tooltips,
   "no data" never counted as zero). Series colors validated for color-blind separation
   in both themes.
+- Chunk 3: creative register (Editorial x Market): serif headline + italic line, tinted
+  pairing cards with expressive numbers, poetic copy with cultural dish references,
+  allergen-hidden note, three switchable backgrounds drawn from ingredient colors.

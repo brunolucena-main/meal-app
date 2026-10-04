@@ -6,6 +6,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { statusForGoal, statusForLimit, TargetBar } from "@/components/nutrition/target-bar"
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { CompareTable } from "@/components/nutrition/compare-table"
+import { CreativeSpecimen } from "./creative-specimen"
 import { chipExamples, compareFoods, compareGroups } from "./examples"
 import { Swatch } from "./swatch"
 
@@ -56,7 +57,7 @@ export default function DesignPage() {
         <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">Design system</h1>
         <p className="max-w-[65ch] text-muted-foreground">
           The base look for planning, logging and comparing. Switch the theme at the bottom of the sidebar to check dark
-          mode. The creative section&apos;s look comes next on this page.
+          mode. The creative section is at the bottom.
         </p>
       </header>
 
@@ -253,6 +254,14 @@ export default function DesignPage() {
           groups={compareGroups}
           basis="Per 100 g raw · % of Daily Value · example values"
         />
+      </Section>
+
+      <Section
+        id="creative"
+        title="Creative section"
+        description="Where food is tasted, not counted. Serif type with room to breathe, cards tinted by each ingredient, big expressive numbers, and a background drawn from the colors on the page. Pick the background you like best."
+      >
+        <CreativeSpecimen />
       </Section>
     </div>
   )
