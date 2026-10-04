@@ -1,4 +1,4 @@
-import { index, integer, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
+import { index, integer, primaryKey, real, sqliteTable, text } from "drizzle-orm/sqlite-core"
 
 import type { Profile, Targets } from "@/lib/nutrition/targets"
 
@@ -48,5 +48,38 @@ export const recipeItems = sqliteTable(
     position: integer("position").notNull(),
   },
   (t) => [index("recipe_items_recipe").on(t.recipeId)]
+)
+
+/**
+ * What you plan and what you eat, one row per item. An entry is either a food (grams) or a
+ * recipe/meal (servings). "planned" entries become "eaten" when you log them.
+ */
+export const entries = sqliteTable(
+  "entries",
+  {
+    id: integer("id").primaryKey({ autoIncrement: true }),
+    /** Local calendar date, YYYY-MM-DD. */
+    date: text("date").notNull(),
+    slot: text("slot", { enum: ["breakfast", "lunch", "dinner", "snack"] }).notNull(),
+    status: text("status", { enum: ["planned", "eaten"] }).notNull(),
+    foodId: integer("food_id"),
+    grams: real("grams"),
+    recipeId: integer("recipe_id"),
+    servings: real("servings"),
+    position: integer("position").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  },
+  (t) => [index("entries_date").on(t.date)]
+)
+
+/** Ticked items on a week's shopping list. */
+export const shoppingChecks = sqliteTable(
+  "shopping_checks",
+  {
+    /** Monday of the week, YYYY-MM-DD. */
+    week: text("week").notNull(),
+    foodId: integer("food_id").notNull(),
+  },
+  (t) => [primaryKey({ columns: [t.week, t.foodId] })]
 )
 

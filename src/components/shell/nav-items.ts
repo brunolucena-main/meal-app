@@ -24,9 +24,9 @@ export type NavItem = {
 }
 
 export const navItems: NavItem[] = [
-  { href: "/", label: "Today", icon: Sun, comingIn: 6 },
+  { href: "/", label: "Today", icon: Sun },
   { href: "/plan", label: "Plan", icon: CalendarDays, comingIn: 6 },
-  { href: "/log", label: "Log", icon: NotebookPen, comingIn: 6 },
+  { href: "/log", label: "Log", icon: NotebookPen },
   { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3 },

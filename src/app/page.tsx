@@ -1,21 +1,23 @@
-import Link from "next/link"
+import { DayView } from "@/components/day/day-view"
+import { isoDate } from "@/lib/nutrition/day"
+import { getDay } from "@/server/days"
+import { listRecipes } from "@/server/recipes"
+import { getSettings } from "@/server/settings"
 
-import { buttonVariants } from "@/components/ui/button"
-
-export default function Home() {
+export default async function TodayPage() {
+  const settings = await getSettings()
+  const today = isoDate(new Date())
+  const [day, recipes] = await Promise.all([getDay(today), listRecipes()])
   return (
-    <div className="mx-auto grid max-w-3xl gap-6 px-4 py-16 md:px-10">
-      <p className="text-xs font-bold tracking-[0.12em] text-muted-foreground uppercase">Session 2 of 9</p>
-      <h1 className="text-4xl font-extrabold tracking-tight">Nothing to plan yet</h1>
-      <p className="max-w-[60ch] text-muted-foreground">
-        The Today screen arrives in session 6, once comparison, recipes and the planner exist. For now you can search
-        the USDA foods and open any of them for its full nutrient profile.
-      </p>
-      <div>
-        <Link href="/foods" className={buttonVariants({ size: "lg" })}>
-          Search foods
-        </Link>
-      </div>
+    <div className="mx-auto max-w-6xl px-4 py-8 md:px-10 md:py-12">
+      <DayView
+        day={day}
+        today={today}
+        settings={settings}
+        recipes={recipes.map(({ id, name, kind }) => ({ id, name, kind }))}
+        defaultStatus="eaten"
+        hrefFor={(iso) => (iso === today ? "/" : `/log/${iso}`)}
+      />
     </div>
   )
 }

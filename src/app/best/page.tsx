@@ -8,7 +8,9 @@ import { NUTRIENT_BY_KEY, NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nu
 import { rankFood, type RankBasis } from "@/lib/nutrition/ranking"
 import { variantKey } from "@/lib/nutrition/similarity"
 import { cn } from "@/lib/utils"
+import { gaps, parseIsoDate } from "@/lib/nutrition/day"
 import { getCatalog } from "@/server/catalog"
+import { getDay } from "@/server/days"
 import { getSettings } from "@/server/settings"
 
 export const metadata: Metadata = { title: "Best sources · Meal App" }
@@ -35,8 +37,15 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
   const includePrepared = one(params.prepared) === "1"
   const includeSpices = one(params.spices) === "1"
 
-  const [catalog, settings] = await Promise.all([getCatalog(), getSettings()])
-  const wanted = Object.fromEntries(want.map((k) => [k, settings.targets[k]]).filter(([, v]) => v)) as Partial<
+  const day = one(params.day)
+  const [catalog, settings, dayView] = await Promise.all([
+    getCatalog(),
+    getSettings(),
+    parseIsoDate(day) ? getDay(day) : Promise.resolve(null),
+  ])
+  // From a day screen, rank by what is still missing that day; otherwise by the full targets.
+  const amounts = dayView ? gaps(settings.targets, dayView.totals.projected) : settings.targets
+  const wanted = Object.fromEntries(want.map((k) => [k, amounts[k]]).filter(([, v]) => v)) as Partial<
     Record<NutrientKey, number>
   >
 
@@ -73,7 +82,15 @@ export default async function BestSourcesPage(props: PageProps<"/best">) {
         </p>
       </header>
 
+      {dayView ? (
+        <p className="rounded-2xl bg-tint-1 px-4 py-3 text-sm font-semibold">
+          Ranking by what is still missing on {dayView.date}, counting what you ate and planned. Bars show how much of
+          that gap each food covers.
+        </p>
+      ) : null}
+
       <form method="get" className="surface grid gap-4 rounded-3xl p-5">
+        {dayView ? <input type="hidden" name="day" value={dayView.date} /> : null}
         <fieldset className="grid gap-2">
           <legend className="mb-2 text-sm font-bold">Nutrients you want more of</legend>
           <div className="flex flex-wrap gap-2">
