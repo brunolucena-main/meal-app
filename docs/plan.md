@@ -14,7 +14,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 5 | Recipes + reusable meals | Done |
 | 6 | Planner, log, shopping list | Done |
 | 7 | Creative I: FlavorGraph import + pairing explorer | Done |
-| 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | |
+| 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | Done |
 | 9 | Polish: backup, speed, accessibility, phone readiness | |
 
 ## Session log
@@ -126,3 +126,18 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   overlap) and "Cooked together" (recipe co-occurrence), each showing the other signal too,
   chips colored from the USDA match, link to nutrition, allergens hidden with a count.
 - Taste profiles for Opposites moved to session 8, where Opposites is built.
+
+### Session 8
+- Taste profiles (`src/lib/flavor/tastes.ts`): sweet/salty/rich from USDA nutrients, sour/
+  bitter/savory/hot from whole-word name tags; balancing rules (acid cuts richness, salt and
+  sweetness tame bitterness, sweet balances sour, sweet rounds savory, richness cools heat...).
+- Flavor graph in memory (`src/server/flavor-graph.ts`): FlavorGraph variants ("pork_chop",
+  "lemon_zest") folded into their curated base ingredient, so the median ingredient has 63
+  recipe partners instead of a handful (pork: 8 -> 237).
+- /opposites: balancing partners ranked by contrast strength x how often recipes combine them.
+- /bridges: ingredients cooked with both A and B; two-step chains when no single bridge exists.
+- /flavor-map: ego-network SVG on the night sky (closer = cooked together more), click to move.
+- Pairings: shared header with tastes and view links; "Swap in" card (same recipe context by
+  cosine of co-occurrence profiles, plus nutrition similarity when both match USDA).
+- Fixes: theme script via next/script beforeInteractive (React 19.2 warning); explicit
+  columns in flavor queries so re-imports don't break a running server.

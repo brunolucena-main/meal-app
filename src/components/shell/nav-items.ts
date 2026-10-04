@@ -39,9 +39,9 @@ export const navItems: NavItem[] = [
 /** Creative section: lives in the purple block of the sidebar. */
 export const creativeItems: NavItem[] = [
   { href: "/pairings", label: "Pairings", icon: Grape },
-  { href: "/opposites", label: "Opposites", icon: Contrast, comingIn: 8 },
-  { href: "/bridges", label: "Bridges", icon: Waypoints, comingIn: 8 },
-  { href: "/flavor-map", label: "Flavor map", icon: Network, comingIn: 8 },
+  { href: "/opposites", label: "Opposites", icon: Contrast },
+  { href: "/bridges", label: "Bridges", icon: Waypoints },
+  { href: "/flavor-map", label: "Flavor map", icon: Network },
 ]
 
 export const toolItems: NavItem[] = [{ href: "/design", label: "Design system", icon: SwatchBook }]

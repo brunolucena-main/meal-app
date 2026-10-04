@@ -1,9 +1,11 @@
-import { ExternalLink, EyeOff } from "lucide-react"
+import { EyeOff } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 
-import { IngredientChip, IngredientSwatch } from "@/components/food/ingredient-chip"
+import { FlavorHeader } from "@/components/creative/flavor-header"
+import { IngredientChip } from "@/components/food/ingredient-chip"
 import { getFlavorIngredient, getPartners, listFlavorIngredients, type Pairing } from "@/server/flavor"
+import { getFlavorGraph, swaps } from "@/server/flavor-graph"
 import { getSettings } from "@/server/settings"
 import { IngredientFinder } from "./ingredient-finder"
 
@@ -38,8 +40,13 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
     )
   }
 
-  const partners = await getPartners(ingredient.id)
-  const allowed = (p: Pairing) => !p.allergens.some((a) => settings.allergies.includes(a))
+  const [partners, graph, swapList] = await Promise.all([
+    getPartners(ingredient.id),
+    getFlavorGraph(),
+    swaps(ingredient.id, settings.targets, 16),
+  ])
+  const tastes = graph.ingredients.get(ingredient.id)?.tastes
+  const allowed = (p: { allergens: string[] }) => !p.allergens.some((a) => settings.allergies.includes(a))
   const hidden = partners.filter((p) => !allowed(p) && ((p.overlap ?? 0) > 0 || (p.together ?? 0) > 0)).length
   const byAroma = partners
     .filter((p) => allowed(p) && (p.overlap ?? 0) > 0)
@@ -51,43 +58,23 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
     .slice(0, TOP)
   const maxOverlap = byAroma[0]?.overlap ?? 1
   const flagged = ingredient.allergens.filter((a) => settings.allergies.includes(a))
+  const swapsShown = swapList.filter((w) => allowed(w.ingredient)).slice(0, 10)
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:px-10 md:py-12">
-      <header className="grid gap-2">
-        <Link href="/pairings" className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase hover:text-on-night">
-          Pairings
-        </Link>
-        <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight">
-          <IngredientSwatch food={{ name: ingredient.name, color: ingredient.color, group: ingredient.group }} className="size-10 rounded-[14px_14px_14px_4px]" />
-          {ingredient.name}
-        </h1>
-        <p className="flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-medium text-on-night-muted">
-          {ingredient.category ? <span>{ingredient.category}</span> : null}
-          <span aria-hidden>·</span>
-          <span>
-            {!ingredient.compoundCount
-              ? "No aroma compound data"
-              : ingredient.genericAroma
-                ? "Only a generic aroma profile on record"
-                : `${ingredient.compoundCount} aroma compounds on record`}
-          </span>
-          {ingredient.foodId ? (
-            <>
-              <span aria-hidden>·</span>
-              <Link href={`/foods/${ingredient.foodId}`} className="inline-flex items-center gap-1 font-bold text-on-night hover:underline">
-                Nutrition
-                <ExternalLink className="size-3.5" aria-hidden />
-              </Link>
-            </>
-          ) : null}
+      <FlavorHeader ingredient={ingredient} tastes={tastes} current="pairings" section="Pairings" />
+      <p className="-mt-2 text-sm font-medium text-on-night-muted">
+        {!ingredient.compoundCount
+          ? "No aroma compound data on record."
+          : ingredient.genericAroma
+            ? "Only a generic aroma profile on record."
+            : `${ingredient.compoundCount} aroma compounds on record.`}
+      </p>
+      {flagged.length ? (
+        <p className="justify-self-start rounded-2xl bg-warn-soft px-4 py-2 text-sm font-bold text-warn">
+          {ingredient.name} is on your allergy list ({flagged.join(", ")}).
         </p>
-        {flagged.length ? (
-          <p className="justify-self-start rounded-2xl bg-warn-soft px-4 py-2 text-sm font-bold text-warn">
-            {ingredient.name} is on your allergy list ({flagged.join(", ")}).
-          </p>
-        ) : null}
-      </header>
+      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-2">
         <section aria-labelledby="aromas-h" className="surface grid content-start gap-3 self-start rounded-3xl p-5">
@@ -128,6 +115,30 @@ export default async function PairingsPage(props: PageProps<"/pairings">) {
           )}
         </section>
       </div>
+
+      {swapsShown.length ? (
+        <section aria-labelledby="swaps-h" className="surface grid gap-3 rounded-3xl p-5">
+          <div className="grid gap-0.5">
+            <h2 id="swaps-h" className="text-base font-extrabold">Swap in</h2>
+            <p className="text-xs font-medium text-muted-foreground">
+              Used with the same partners in recipes; nutrition match shown where both have USDA data
+            </p>
+          </div>
+          <ul className="grid gap-x-6 sm:grid-cols-2">
+            {swapsShown.map((w) => (
+              <li key={w.ingredient.id} className="flex items-center justify-between gap-3 border-t border-border py-2">
+                <Link href={`/pairings?i=${w.ingredient.id}`} className="rounded-full focus-visible:outline-2 focus-visible:outline-ring">
+                  <IngredientChip food={{ name: w.ingredient.name, color: w.ingredient.color, group: w.ingredient.group }} size="sm" className="hover:bg-muted" />
+                </Link>
+                <span className="text-right text-[11px] font-semibold text-muted-foreground tabular-nums">
+                  used alike {Math.round(w.context * 100)}%
+                  {w.nutrition !== null ? ` · nutrition ${Math.round(w.nutrition * 100)}%` : ""}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {hidden > 0 ? (
         <p className="flex items-center gap-2 text-sm font-semibold text-on-night-muted">
