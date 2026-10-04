@@ -8,6 +8,7 @@ import {
   Medal,
   Network,
   NotebookPen,
+  ShoppingBasket,
   Sun,
   SwatchBook,
   Target,
@@ -25,7 +26,8 @@ export type NavItem = {
 
 export const navItems: NavItem[] = [
   { href: "/", label: "Today", icon: Sun },
-  { href: "/plan", label: "Plan", icon: CalendarDays, comingIn: 6 },
+  { href: "/plan", label: "Plan", icon: CalendarDays },
+  { href: "/shopping", label: "Shopping", icon: ShoppingBasket },
   { href: "/log", label: "Log", icon: NotebookPen },
   { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/foods", label: "Foods", icon: Apple },

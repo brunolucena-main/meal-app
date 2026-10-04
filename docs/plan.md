@@ -12,7 +12,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 3 | Comparison engine + Compare screen | Done |
 | 4 | Targets, substitutes, goal ranking, allergy filter | Done |
 | 5 | Recipes + reusable meals | Done |
-| 6 | Planner, log, shopping list | |
+| 6 | Planner, log, shopping list | Done |
 | 7 | Creative I: FlavorGraph import + pairing explorer | |
 | 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | |
 | 9 | Polish: backup, speed, accessibility, phone readiness | |
@@ -105,3 +105,15 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Fixes: migrations re-run when the journal changes (new migration while dev server runs);
   replaced next-themes with a small built-in theme script (React 19.2 warned about its
   inline script); search requires whole words in name parts ("milk" no longer finds milkfish).
+
+### Session 6
+- Entries table: one row per planned or eaten item (food in grams or recipe in servings), by
+  date and slot; shopping check marks per week (migration 0002).
+- `src/lib/nutrition/day.ts`: eaten / planned / projected totals, partial markers, remaining
+  gaps for goal nutrients (unknowns skipped once something is logged), local date helpers.
+- Today (home) and /log/[date]: energy card (eaten solid, planned light), target bars,
+  biggest gaps with a link to Best sources ranked by that day's gaps, four meal slots, tick to
+  log, edit amounts, add foods or saved meals, copy a day as planned. /log lists logged days.
+- /plan: week grid (Mon-Sun) with projected energy per day and weekly averages.
+- /shopping: the week's planned items with recipes expanded into ingredients, grouped by USDA
+  category, grams plus approximate USDA portions, tick-off that persists.
