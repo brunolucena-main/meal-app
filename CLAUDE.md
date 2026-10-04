@@ -21,8 +21,10 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
   cards (rounded-3xl), thick bars, plain-language status (always word + color).
 - Creative section: SAME look as the rest of the app (same cards, chips, bars), on a starry
   night-sky background with purple details (`src/components/creative/starry-sky.tsx`,
-  `CreativeSurface`). Its links live in a purple block in the sidebar. Violet (`bg-violet`)
-  is the creative accent for bars.
+  `CreativeSurface`). On creative routes the sky fills the whole main area (AppShell's
+  `creativeRoutes`). The sidebar's lower part is purple, full width down to the bottom, and
+  holds the creative links plus tools. Violet (`bg-violet`) is the creative accent for bars.
+  Full-page preview: `/design/creative`.
 - Ingredients: color chips with food-group textures (`src/components/food/ingredient-chip.tsx`).
   No illustrations.
 - Creative copy: on hold. Show information only (names, numbers, short factual labels). If prose

@@ -1,6 +1,8 @@
 import type { Metadata } from "next"
 
-import { Button } from "@/components/ui/button"
+import Link from "next/link"
+
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { statusForGoal, statusForLimit, TargetBar } from "@/components/nutrition/target-bar"
@@ -262,6 +264,9 @@ export default function DesignPage() {
         description="Same components as the rest of the app, on a night sky with purple details. Example data: pairings, opposites and bridges for spinach."
       >
         <CreativeSpecimen />
+        <Link href="/design/creative" className={buttonVariants({ variant: "outline", className: "justify-self-start" })}>
+          Open the full-page preview
+        </Link>
       </Section>
     </div>
   )

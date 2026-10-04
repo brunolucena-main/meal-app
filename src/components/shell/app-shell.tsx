@@ -3,6 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 
+import { StarrySky } from "@/components/creative/starry-sky"
 import { cn } from "@/lib/utils"
 import { creativeItems, navItems, toolItems, type NavItem } from "./nav-items"
 import { ThemeToggle } from "./theme-toggle"
@@ -63,43 +64,55 @@ function NavLink({ item, active, tone = "default" }: { item: NavItem; active: bo
   )
 }
 
+/** Routes that get the night-sky main area: the creative section plus its design preview. */
+const creativeRoutes = [...creativeItems.map((item) => item.href), "/design/creative"]
+
 export function AppShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href))
+  const onCreative = creativeRoutes.some((href) => pathname.startsWith(href))
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col gap-6 border-b border-border bg-card px-4 py-5 md:sticky md:top-0 md:h-dvh md:w-60 md:border-r md:border-b-0">
-        <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
-          <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
-          Meal App
-        </Link>
-        <nav aria-label="Main" className="flex flex-col gap-1">
-          {navItems.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(item.href)} />
-          ))}
-        </nav>
-        <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1 rounded-2xl bg-creative p-2">
-          <span
-            id="creative-nav-h"
-            className="px-3 pt-1 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
-          >
-            Creative
-          </span>
-          {creativeItems.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />
-          ))}
-        </nav>
-        <nav aria-label="Tools" className="flex flex-col gap-1 md:mt-auto">
-          {toolItems.map((item) => (
-            <NavLink key={item.href} item={item} active={isActive(item.href)} />
-          ))}
-          <div className="px-1 pt-2">
-            <ThemeToggle />
-          </div>
-        </nav>
+      <aside className="flex shrink-0 flex-col border-b border-border bg-card md:sticky md:top-0 md:h-dvh md:w-60 md:border-r md:border-b-0">
+        <div className="grid gap-6 px-4 py-5">
+          <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
+            <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
+            Meal App
+          </Link>
+          <nav aria-label="Main" className="flex flex-col gap-1">
+            {navItems.map((item) => (
+              <NavLink key={item.href} item={item} active={isActive(item.href)} />
+            ))}
+          </nav>
+        </div>
+
+        <div className="flex flex-1 flex-col bg-creative px-4 pt-4 pb-5">
+          <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
+            <span
+              id="creative-nav-h"
+              className="px-3 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
+            >
+              Creative
+            </span>
+            {creativeItems.map((item) => (
+              <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />
+            ))}
+          </nav>
+          <nav aria-label="Tools" className="mt-auto flex flex-col gap-1 pt-6">
+            {toolItems.map((item) => (
+              <NavLink key={item.href} item={item} active={pathname === item.href} tone="creative" />
+            ))}
+            <div className="px-1 pt-2">
+              <ThemeToggle tone="creative" />
+            </div>
+          </nav>
+        </div>
       </aside>
-      <main className="min-w-0 flex-1">{children}</main>
+      <main className={cn("relative min-w-0 flex-1", onCreative && "isolate text-on-night")}>
+        {onCreative ? <StarrySky /> : null}
+        {children}
+      </main>
     </div>
   )
 }

@@ -41,95 +41,103 @@ function CardHeader({ title, definition }: { title: string; definition: string }
   )
 }
 
+/** Example creative page content: same components as the rest of the app. */
+export function PairingsExample({ className = "" }: { className?: string }) {
+  return (
+    <div className={`grid gap-6 ${className}`}>
+      <header className="grid gap-2">
+        <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">Pairings</p>
+        <h3 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight">
+          <IngredientSwatch food={spinach} className="size-9 rounded-[12px_12px_12px_4px]" />
+          Spinach
+        </h3>
+        <p className="text-sm font-medium text-on-night-muted">Leafy green · 23 kcal per 100 g · raw</p>
+      </header>
+
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+        <section className="surface grid content-start gap-4 self-start rounded-3xl p-5">
+          <CardHeader title="Pairs well" definition="Shares the most aroma compounds" />
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-xs text-muted-foreground">
+                <th scope="col" className="pb-2 font-semibold">Ingredient</th>
+                <th scope="col" className="pb-2 font-semibold">Shared aromas</th>
+                <th scope="col" className="pb-2 text-right font-semibold">Recipes together</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pairsWell.map((p) => (
+                <tr key={p.food.name} className="border-t border-border">
+                  <th scope="row" className="py-2 pr-3 text-left font-normal">
+                    <IngredientChip food={p.food} size="sm" />
+                  </th>
+                  <td className="py-2 pr-3">
+                    <span className="flex items-center gap-2">
+                      <span className="block h-2 flex-1 bg-track">
+                        <span
+                          className="block h-full rounded-r-[4px] bg-violet"
+                          style={{ width: `${(p.shared / maxShared) * 100}%` }}
+                        />
+                      </span>
+                      <span className="w-6 text-right font-bold tabular-nums">{p.shared}</span>
+                    </span>
+                  </td>
+                  <td className="py-2 text-right font-semibold tabular-nums">{p.together.toLocaleString("en")}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </section>
+
+        <div className="grid content-start gap-4">
+          <section className="surface grid gap-3 rounded-3xl p-5">
+            <CardHeader title="Opposites" definition="Often cooked together, few aromas in common" />
+            <ul className="grid gap-2">
+              {opposites.map((o) => (
+                <li key={o.food.name} className="flex items-center justify-between gap-3 border-t border-border pt-2 text-sm">
+                  <IngredientChip food={o.food} size="sm" />
+                  <span className="text-right text-xs font-semibold text-muted-foreground tabular-nums">
+                    {o.shared} shared · {o.together.toLocaleString("en")} recipes
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          <section className="surface grid gap-3 rounded-3xl p-5">
+            <CardHeader title="Bridges" definition="Ingredients that link spinach to foods it rarely meets" />
+            <ul className="grid gap-2">
+              {bridges.map((b) => (
+                <li key={b.to.name} className="flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
+                  <IngredientChip food={spinach} size="sm" />
+                  <ArrowRight className="size-3.5 text-muted-foreground" aria-label="via" />
+                  {b.via.map((v) => (
+                    <span key={v.name} className="rounded-full bg-violet-soft p-0.5">
+                      <IngredientChip food={v} size="sm" className="border-transparent" />
+                    </span>
+                  ))}
+                  <ArrowRight className="size-3.5 text-muted-foreground" aria-label="to" />
+                  <IngredientChip food={b.to} size="sm" />
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+      </div>
+
+      <p className="flex items-center gap-2 text-sm font-semibold text-on-night-muted">
+        <EyeOff className="size-4" aria-hidden />
+        Hazelnut hidden (allergen)
+      </p>
+    </div>
+  )
+}
+
+/** Small framed preview for the style guide; the real pages get the sky across the whole main area. */
 export function CreativeSpecimen() {
   return (
     <CreativeSurface className="rounded-3xl">
-      <div className="grid gap-6 p-5 md:p-8">
-        <header className="grid gap-2">
-          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">Pairings</p>
-          <h3 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight">
-            <IngredientSwatch food={spinach} className="size-9 rounded-[12px_12px_12px_4px]" />
-            Spinach
-          </h3>
-          <p className="text-sm font-medium text-on-night-muted">Leafy green · 23 kcal per 100 g · raw</p>
-        </header>
-
-        <div className="grid gap-4 lg:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
-          <section className="surface grid content-start gap-4 self-start rounded-3xl p-5">
-            <CardHeader title="Pairs well" definition="Shares the most aroma compounds" />
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="text-left text-xs text-muted-foreground">
-                  <th scope="col" className="pb-2 font-semibold">Ingredient</th>
-                  <th scope="col" className="pb-2 font-semibold">Shared aromas</th>
-                  <th scope="col" className="pb-2 text-right font-semibold">Recipes together</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pairsWell.map((p) => (
-                  <tr key={p.food.name} className="border-t border-border">
-                    <th scope="row" className="py-2 pr-3 text-left font-normal">
-                      <IngredientChip food={p.food} size="sm" />
-                    </th>
-                    <td className="py-2 pr-3">
-                      <span className="flex items-center gap-2">
-                        <span className="block h-2 flex-1 bg-track">
-                          <span
-                            className="block h-full rounded-r-[4px] bg-violet"
-                            style={{ width: `${(p.shared / maxShared) * 100}%` }}
-                          />
-                        </span>
-                        <span className="w-6 text-right font-bold tabular-nums">{p.shared}</span>
-                      </span>
-                    </td>
-                    <td className="py-2 text-right font-semibold tabular-nums">{p.together.toLocaleString("en")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-
-          <div className="grid content-start gap-4">
-            <section className="surface grid gap-3 rounded-3xl p-5">
-              <CardHeader title="Opposites" definition="Often cooked together, few aromas in common" />
-              <ul className="grid gap-2">
-                {opposites.map((o) => (
-                  <li key={o.food.name} className="flex items-center justify-between gap-3 border-t border-border pt-2 text-sm">
-                    <IngredientChip food={o.food} size="sm" />
-                    <span className="text-right text-xs font-semibold text-muted-foreground tabular-nums">
-                      {o.shared} shared · {o.together.toLocaleString("en")} recipes
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-
-            <section className="surface grid gap-3 rounded-3xl p-5">
-              <CardHeader title="Bridges" definition="Ingredients that link spinach to foods it rarely meets" />
-              <ul className="grid gap-2">
-                {bridges.map((b) => (
-                  <li key={b.to.name} className="flex flex-wrap items-center gap-1.5 border-t border-border pt-2">
-                    <IngredientChip food={spinach} size="sm" />
-                    <ArrowRight className="size-3.5 text-muted-foreground" aria-label="via" />
-                    {b.via.map((v) => (
-                      <span key={v.name} className="rounded-full bg-violet-soft p-0.5">
-                        <IngredientChip food={v} size="sm" className="border-transparent" />
-                      </span>
-                    ))}
-                    <ArrowRight className="size-3.5 text-muted-foreground" aria-label="to" />
-                    <IngredientChip food={b.to} size="sm" />
-                  </li>
-                ))}
-              </ul>
-            </section>
-          </div>
-        </div>
-
-        <p className="flex items-center gap-2 text-sm font-semibold text-on-night-muted">
-          <EyeOff className="size-4" aria-hidden />
-          Hazelnut hidden (allergen)
-        </p>
-      </div>
+      <PairingsExample className="p-5 md:p-8" />
     </CreativeSurface>
   )
 }

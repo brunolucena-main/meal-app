@@ -38,6 +38,8 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Revision 4: creative section uses the base look on a starry night sky with purple details;
   purple sidebar block with Pairings, Opposites, Bridges, Flavor map. Prose copy on hold.
   Opposites added to session 8 (often cooked together, few shared aroma compounds).
+- Revision 5: calmer stars; night sky fills the whole main area on creative routes; purple
+  sidebar section spans full width to the bottom. Full-page preview at /design/creative.
 
 ## Creative features (sessions 7-8)
 - Pairs well: ingredients sharing the most flavor compounds (FlavorGraph compound edges).

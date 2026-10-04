@@ -26,10 +26,10 @@ function starLayer(tile: number, count: number, size: number, color: string) {
 }
 
 const layers = [
-  starLayer(173, 8, 1, "rgb(255 255 255 / 0.9)"),
-  starLayer(233, 9, 1.2, "rgb(255 255 255 / 0.8)"),
-  starLayer(317, 8, 1.6, "rgb(255 255 255 / 0.75)"),
-  starLayer(419, 8, 1.8, "rgb(196 168 255 / 0.95)"),
+  starLayer(173, 5, 1, "rgb(255 255 255 / 0.7)"),
+  starLayer(233, 6, 1.2, "rgb(255 255 255 / 0.6)"),
+  starLayer(317, 5, 1.5, "rgb(255 255 255 / 0.55)"),
+  starLayer(419, 5, 1.6, "rgb(196 168 255 / 0.75)"),
 ]
 
 const skyStyle: CSSProperties = {
@@ -44,15 +44,15 @@ const skyStyle: CSSProperties = {
 }
 
 /** Purple four-point sparkles and a few bright twinkling stars, placed once. */
-const sparkles = Array.from({ length: 14 }, (_, i) => ({
+const sparkles = Array.from({ length: 10 }, (_, i) => ({
   left: `${Math.round(rand() * 94 + 3)}%`,
   top: `${Math.round(rand() * 90 + 4)}%`,
-  size: Math.round(8 + rand() * 12),
+  size: Math.round(7 + rand() * 8),
   color: i % 3 === 0 ? "#e4d8ff" : i % 3 === 1 ? "#b794ff" : "#8f63ff",
   delay: `${(rand() * -4.5).toFixed(2)}s`,
 }))
 
-const twinklers = Array.from({ length: 28 }, () => ({
+const twinklers = Array.from({ length: 18 }, () => ({
   left: `${(rand() * 100).toFixed(1)}%`,
   top: `${(rand() * 100).toFixed(1)}%`,
   size: rand() > 0.7 ? 3 : 2,
@@ -73,7 +73,7 @@ export function StarrySky({ className }: { className?: string }) {
       {twinklers.map((t, i) => (
         <span
           key={`t${i}`}
-          className="animate-twinkle absolute rounded-full bg-white"
+          className="animate-twinkle absolute rounded-full bg-white/80"
           style={{ left: t.left, top: t.top, width: t.size, height: t.size, animationDelay: t.delay }}
         />
       ))}
