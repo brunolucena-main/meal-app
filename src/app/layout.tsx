@@ -21,7 +21,7 @@ const newsreader = Newsreader({
 const bricolage = Bricolage_Grotesque({
   variable: "--font-bricolage",
   subsets: ["latin"],
-  axes: ["opsz"],
+  axes: ["opsz", "wdth"],
 })
 
 export const metadata: Metadata = {

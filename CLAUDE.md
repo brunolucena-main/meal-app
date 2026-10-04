@@ -22,9 +22,12 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 - Creative section: mix of Editorial (Newsreader headlines) and Market Expressive
   (Bricolage Grotesque, produce tonal containers). No illustrated ingredients: use a
   representative color + light styling, kept compact.
-- Creative copy voice: poetic and sensory (taste, smell, texture, light), and it names real
-  dishes and traditions from different countries (e.g. Greek spanakopita, Korean namul,
-  Catalan espinacs a la catalana). References must be accurate; avoid generic food-blog tone.
+- Creative copy voice: how a chef with some artistic flair talks. Practical kitchen knowledge
+  (technique, timing, why it works) said with a light touch. Cultural references only where
+  they fit naturally (e.g. Greek spanakopita, Catalan spinach with pine nuts); must be accurate.
+  Not flowery or forced.
+- Creative look: under review. Four alternatives on `/design` (Lab labels / Flavour thesaurus /
+  Big type / Gallery) in `src/app/design/creative-alts/`. Ingredient chips stay.
 - Creative backgrounds tint themselves from the ingredients on screen
   (`src/components/creative/creative-backdrop.tsx`: field / market / rings).
 - Living style guide at `/design`.

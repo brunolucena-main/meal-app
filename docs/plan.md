@@ -32,3 +32,6 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Chunk 3: creative register (Editorial x Market): serif headline + italic line, tinted
   pairing cards with expressive numbers, poetic copy with cultural dish references,
   allergen-hidden note, three switchable backgrounds drawn from ingredient colors.
+- Revision 3: user not convinced by the B x D creative look. Researched references and built
+  four alternatives (Noma Projects labels, The Flavour Thesaurus, Hot & Cool big type,
+  The Gourmand gallery). Copy rewritten in a chef's voice.
