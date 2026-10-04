@@ -9,7 +9,8 @@
     "lint": "eslint",
     "data:import": "tsx scripts/import-usda.ts",
     "test": "vitest run",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "data:flavor": "tsx scripts/import-flavorgraph.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.8.0",

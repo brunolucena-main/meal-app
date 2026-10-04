@@ -13,7 +13,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 4 | Targets, substitutes, goal ranking, allergy filter | Done |
 | 5 | Recipes + reusable meals | Done |
 | 6 | Planner, log, shopping list | Done |
-| 7 | Creative I: FlavorGraph import + pairing explorer | |
+| 7 | Creative I: FlavorGraph import + pairing explorer | Done |
 | 8 | Creative II: flavor map, bridges, opposites, flavor-aware substitutes | |
 | 9 | Polish: backup, speed, accessibility, phone readiness | |
 
@@ -117,3 +117,12 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - /plan: week grid (Mon-Sun) with projected energy per day and weekly averages.
 - /shopping: the week's planned items with recipes expanded into ingredients, grouped by USDA
   category, grams plus approximate USDA portions, tick-off that persists.
+
+### Session 7
+- FlavorGraph import (`scripts/import-flavorgraph.ts`, see docs/data.md): ingredients,
+  compound links with rarity weights, co-occurrence; curated ingredients matched to USDA with
+  overrides; generic aroma profiles detected and excluded.
+- /pairings: ingredient finder (609 curated) and, per ingredient, "Pairs well" (weighted aroma
+  overlap) and "Cooked together" (recipe co-occurrence), each showing the other signal too,
+  chips colored from the USDA match, link to nutrition, allergens hidden with a count.
+- Taste profiles for Opposites moved to session 8, where Opposites is built.

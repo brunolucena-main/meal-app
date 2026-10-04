@@ -25,3 +25,23 @@ Source: USDA FoodData Central (public domain), generic foods only.
 - Adds a food group, a representative color (`src/lib/food/classify.ts`) and allergen tags
   (`src/lib/food/allergens.ts`; hazelnut also matches filbert, praline, gianduja, mixed nuts).
 - Builds an FTS5 index on descriptions for search (`src/server/foods.ts`).
+
+# Flavor data
+
+Source: FlavorGraph (Park et al., Scientific Reports 2021), Apache-2.0,
+https://github.com/lamypark/FlavorGraph. Files from its `input/` folder, saved in
+`data/raw/flavorgraph/` as `nodes.csv`, `edges.csv` and `categories.csv` (the 616-ingredient
+"Top300+FDB400+HyperFoods104" list). Import: `npm run data:flavor` (after the USDA import).
+
+- 6,653 ingredients, 1,645 flavor compounds; 111,355 cooked-together scores (recipe
+  co-occurrence, 0-1) and 35,440 ingredient-compound links (from FlavorDB).
+- Only the 609 curated ingredients are shown. 491 are matched to a USDA food by search;
+  `scripts/flavor-overrides.json` fixes wrong matches (slug -> FDC id, or null for none).
+  `data/flavor-matches.csv` lists every match for review.
+- Shared aromas are weighted by rarity (idf) and ranked by cosine overlap, so compound-rich
+  foods don't win by size.
+- 176 of the 400 ingredients with compound data have a generic placeholder profile (near
+  identical to 5+ others, e.g. abalone, acorn, agave). They are left out of aroma pairings;
+  224 ingredients have specific profiles. Bakery, dishes and "ETC" are also excluded from aroma
+  pairings because they inherit their base ingredient's compounds.
+
