@@ -10,7 +10,7 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 | 1 | Project setup + design system | Done |
 | 2 | USDA data + food search | Done |
 | 3 | Comparison engine + Compare screen | Done |
-| 4 | Targets, substitutes, goal ranking, allergy filter | |
+| 4 | Targets, substitutes, goal ranking, allergy filter | Done |
 | 5 | Recipes + reusable meals | |
 | 6 | Planner, log, shopping list | |
 | 7 | Creative I: FlavorGraph import + pairing explorer | |
@@ -77,3 +77,19 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - /compare: up to 4 foods in the URL (?ids=&basis=&portions=&all=1), search-as-you-type picker
   (GET /api/foods/search), basis tabs, portion picker per food for "per serving", summary card,
   key nutrients or all 40, quick-start pairs. Food pages have a Compare button.
+
+### Session 4
+- Targets (`src/lib/nutrition/targets.ts`): Mifflin-St Jeor x activity x goal, protein g/kg,
+  fat share, carbs remainder, fiber 14 g/1000 kcal, sat fat and added sugars < 10% energy,
+  NIH DRIs by sex/age, food-relevant upper limits. /targets page with profile, allergy list
+  and per-nutrient overrides. Settings stored in SQLite via Drizzle migrations (/drizzle).
+- Food and compare pages measure against personal targets.
+- Substitutes (`similarity.ts`): log-compressed share-of-target vectors per 100 g, weighted
+  RMS distance -> exp(-d), discounted by shared-nutrient coverage; "more X" (>= +25%) and
+  "less Y" (<= -20%) filters; same group or all foods; one row per food. /substitutes?id=.
+- Best sources (`ranking.ts`): average capped coverage of chosen nutrients per 100 kcal or
+  100 g, penalty for burning sodium / sat fat / added sugar budgets faster than energy.
+  /best. Ready to take real daily gaps once logging exists (session 6).
+- Allergy filter: hazelnut-tagged foods hidden from substitutes and best sources (count shown),
+  flagged on food and compare pages.
+- Open questions for Bruno: docs/questions.md.

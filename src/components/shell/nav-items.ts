@@ -5,6 +5,7 @@ import {
   Columns3,
   Contrast,
   Grape,
+  Medal,
   Network,
   NotebookPen,
   Sun,
@@ -29,6 +30,7 @@ export const navItems: NavItem[] = [
   { href: "/recipes", label: "Recipes", icon: ChefHat, comingIn: 5 },
   { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3 },
+  { href: "/best", label: "Best sources", icon: Medal },
   { href: "/targets", label: "Targets", icon: Target },
 ]
 

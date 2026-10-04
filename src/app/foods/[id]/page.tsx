@@ -1,4 +1,4 @@
-import { ArrowLeft, Columns3, ExternalLink, TriangleAlert } from "lucide-react"
+import { ArrowLeft, Columns3, ExternalLink, Replace, TriangleAlert } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -55,6 +55,10 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
             className="size-12 rounded-[16px_16px_16px_5px]"
           />
           <h1 className="flex-1 text-2xl font-extrabold tracking-tight md:text-3xl">{food.description}</h1>
+          <Link href={`/substitutes?id=${food.id}`} className={buttonVariants({ variant: "outline" })}>
+            <Replace aria-hidden />
+            Substitutes
+          </Link>
           <Link href={`/compare?ids=${food.id}`} className={buttonVariants({ variant: "outline" })}>
             <Columns3 aria-hidden />
             Compare
