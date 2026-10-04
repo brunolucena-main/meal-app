@@ -127,7 +127,7 @@
   --creative-muted: #d9cffb;
   --violet: #6d3df0;
   --violet-soft: #ece6ff;
-  --night: #120d2b;
+  --night: #170c38;
   --on-night: #f4f0ff;
   --on-night-muted: #c5bce6;
 }
@@ -179,7 +179,7 @@
   --creative-muted: #c3b6f0;
   --violet: #9b7bff;
   --violet-soft: #2a2152;
-  --night: #0c0920;
+  --night: #170c38;
   --on-night: #f4f0ff;
   --on-night-muted: #b9afd9;
 }
@@ -214,26 +214,5 @@
   }
   .tabular {
     font-variant-numeric: tabular-nums;
-  }
-}
-
-/* Creative section: stars twinkle slowly; still for reduced motion. */
-@keyframes twinkle {
-  0%,
-  100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.35;
-  }
-}
-
-.animate-twinkle {
-  animation: twinkle 4.5s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .animate-twinkle {
-    animation: none;
   }
 }

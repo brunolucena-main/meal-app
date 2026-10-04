@@ -43,8 +43,15 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 
 ## Creative features (sessions 7-8)
 - Pairs well: ingredients sharing the most flavor compounds (FlavorGraph compound edges).
-- Opposites: pairs recipes combine often but that share few compounds (high co-occurrence,
-  low compound overlap). Contrast pairing, common in East Asian cuisines per Ahn et al. 2011.
+- Opposites: contrasting tastes that balance each other, the way chefs pair (rich vs acid or
+  bitter, sweet vs salty or sour, spicy vs cooling). Needs a small taste profile per
+  ingredient: seeded from USDA proxies (fat, sugars, sodium) plus hand tags for sour, bitter,
+  umami, spicy on the common ingredients. Secondary signal from data: often cooked together
+  but few shared aroma compounds (contrast pairing, typical of East Asian cuisines per
+  Ahn et al. 2011).
 - Bridges: for two ingredients that rarely meet, the ingredients that pair well with both
   (shortest strong paths in the pairing graph).
 - Flavor map: the network graph to browse.
+- Revision 6: sidebar purple fades to very dark purple at the bottom (behind the theme
+  picker); creative background is a flat stylized pattern on that same dark purple; no
+  divider beside the purple part. Opposites reworked as taste contrast.

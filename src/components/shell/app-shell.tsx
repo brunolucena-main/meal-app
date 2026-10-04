@@ -74,8 +74,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-dvh flex-col md:flex-row">
-      <aside className="flex shrink-0 flex-col border-b border-border bg-card md:sticky md:top-0 md:h-dvh md:w-60 md:border-r md:border-b-0">
-        <div className="grid gap-6 px-4 py-5">
+      <aside className="flex shrink-0 flex-col md:sticky md:top-0 md:h-dvh md:w-60">
+        {/* Only the white part carries a divider; the purple part melts into the night sky. */}
+        <div className="grid gap-6 border-b border-border bg-card px-4 py-5 md:border-r md:border-b-0">
           <Link href="/" className="flex items-center gap-2 px-3 text-base font-extrabold tracking-tight">
             <span aria-hidden className="size-6 rounded-[10px_10px_10px_3px] bg-primary" />
             Meal App
@@ -87,7 +88,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
         </div>
 
-        <div className="flex flex-1 flex-col bg-creative px-4 pt-4 pb-5">
+        <div
+          className="flex flex-1 flex-col px-4 pt-4 pb-5"
+          style={{
+            background: "linear-gradient(180deg, var(--creative) 0%, var(--creative) 12%, var(--night) 80%)",
+          }}
+        >
           <nav aria-labelledby="creative-nav-h" className="flex flex-col gap-1">
             <span
               id="creative-nav-h"

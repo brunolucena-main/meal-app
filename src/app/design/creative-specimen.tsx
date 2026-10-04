@@ -17,11 +17,12 @@ const pairsWell = [
   { food: f("Feta", "#efe9da", "dairy"), shared: 6, together: 1840 },
 ]
 
+// Opposites = taste contrast (spinach is mildly bitter and earthy), plus how few aromas they share.
 const opposites = [
-  { food: f("Rice", "#ece6d6", "grain"), shared: 1, together: 2030 },
-  { food: f("Chickpeas", "#d9b56f", "legume"), shared: 2, together: 1150 },
-  { food: f("Coconut milk", "#f3efe6", "fat"), shared: 1, together: 640 },
-  { food: f("Raisins", "#5b2c3a", "fruit"), shared: 2, together: 410 },
+  { food: f("Cream", "#f4efe2", "dairy"), contrast: "Rich vs bitter", shared: 2, together: 1730 },
+  { food: f("Raisins", "#5b2c3a", "fruit"), contrast: "Sweet vs bitter", shared: 2, together: 410 },
+  { food: f("Lemon", "#f1d23a", "fruit"), contrast: "Sour vs earthy", shared: 14, together: 3120 },
+  { food: f("Parmesan", "#e9d38f", "dairy"), contrast: "Salty and savory vs bitter", shared: 5, together: 1390 },
 ]
 
 const bridges = [
@@ -91,13 +92,18 @@ export function PairingsExample({ className = "" }: { className?: string }) {
 
         <div className="grid content-start gap-4">
           <section className="surface grid gap-3 rounded-3xl p-5">
-            <CardHeader title="Opposites" definition="Often cooked together, few aromas in common" />
+            <CardHeader title="Opposites" definition="Contrasting tastes that balance each other" />
             <ul className="grid gap-2">
               {opposites.map((o) => (
-                <li key={o.food.name} className="flex items-center justify-between gap-3 border-t border-border pt-2 text-sm">
-                  <IngredientChip food={o.food} size="sm" />
-                  <span className="text-right text-xs font-semibold text-muted-foreground tabular-nums">
-                    {o.shared} shared · {o.together.toLocaleString("en")} recipes
+                <li key={o.food.name} className="grid gap-1 border-t border-border pt-2 text-sm">
+                  <span className="flex items-center justify-between gap-3">
+                    <IngredientChip food={o.food} size="sm" />
+                    <span className="rounded-full bg-violet-soft px-2.5 py-0.5 text-xs font-bold text-foreground">
+                      {o.contrast}
+                    </span>
+                  </span>
+                  <span className="text-xs font-semibold text-muted-foreground tabular-nums">
+                    {o.shared} shared aromas · {o.together.toLocaleString("en")} recipes together
                   </span>
                 </li>
               ))}
