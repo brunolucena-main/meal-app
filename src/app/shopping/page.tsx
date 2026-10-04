@@ -3,14 +3,18 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
-import { formatAmount } from "@/lib/format"
+import { formatAmount, formatDate } from "@/lib/format"
 import { addDays, isoDate, parseIsoDate, weekStart } from "@/lib/nutrition/day"
 import { cn } from "@/lib/utils"
 import { shoppingList, type ShoppingItem } from "@/server/days"
 import { getSettings } from "@/server/settings"
 import { ShoppingCheck } from "./shopping-item"
+import { getT } from "@/server/i18n"
 
-export const metadata: Metadata = { title: "Shopping list · Meal App" }
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getT()
+  return { title: `${t("Shopping list")} · Meal App` }
+}
 
 const one = (v: string | string[] | undefined) => (Array.isArray(v) ? v[0] : v) ?? ""
 
@@ -27,6 +31,7 @@ function weight(grams: number) {
 }
 
 export default async function ShoppingPage(props: PageProps<"/shopping">) {
+  const t = await getT()
   const params = await props.searchParams
   const settings = await getSettings()
   const requested = one(params.week)
@@ -37,57 +42,57 @@ export default async function ShoppingPage(props: PageProps<"/shopping">) {
     const key = item.category ?? "Other"
     byCategory.set(key, [...(byCategory.get(key) ?? []), item])
   }
-  const from = parseIsoDate(week)!.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
-  const to = parseIsoDate(addDays(week, 6))!.toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+  const from = formatDate(parseIsoDate(week)!, { day: "numeric", month: "short" })
+  const to = formatDate(parseIsoDate(addDays(week, 6))!, { day: "numeric", month: "short" })
   const left = items.filter((i) => !i.checked).length
 
   return (
     <div className="mx-auto grid max-w-3xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <Link href={`/plan?week=${week}`} className="inline-flex items-center gap-1.5 justify-self-start text-sm font-semibold text-muted-foreground hover:text-foreground">
         <ArrowLeft className="size-4" aria-hidden />
-        Plan
+        {t("Plan")}
       </Link>
       <header className="grid gap-1">
         <p className="text-xs font-bold tracking-[0.12em] text-muted-foreground uppercase">
           {from} – {to}
         </p>
-        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">Shopping list</h1>
+        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Shopping list")}</h1>
         <p className="text-muted-foreground">
-          Everything still planned this week, with recipes broken into their ingredients.
-          {items.length ? ` ${left} of ${items.length} left to get.` : ""}
+          {t("Everything still planned this week, with recipes broken into their ingredients.")}
+          {items.length ? ` ${t("{n} of {total} left to get.", { n: left, total: items.length })}` : ""}
         </p>
       </header>
 
       {items.length === 0 ? (
         <section className="surface grid gap-2 rounded-3xl p-6">
-          <h2 className="text-lg font-extrabold">Nothing planned for this week</h2>
+          <h2 className="text-lg font-extrabold">{t("Nothing planned for this week")}</h2>
           <p className="text-muted-foreground">
-            Plan some meals on the{" "}
+            {t("Plan some meals on the")}{" "}
             <Link href={`/plan?week=${week}`} className="font-bold text-primary hover:underline">
-              week planner
+              {t("week planner")}
             </Link>{" "}
-            and they show up here.
+            {t("and they show up here.")}
           </p>
         </section>
       ) : (
         [...byCategory.entries()].map(([category, list]) => (
           <section key={category} aria-labelledby={`cat-${category}`} className="surface grid rounded-3xl px-5 py-3">
             <h2 id={`cat-${category}`} className="pt-1 pb-2 text-xs font-bold tracking-[0.1em] text-muted-foreground uppercase">
-              {category}
+              {t(category)}
             </h2>
             <ul className="divide-y divide-border">
               {list.map((item) => {
                 const flagged = item.allergens.some((a) => settings.allergies.includes(a))
                 return (
                   <li key={item.foodId} className="flex items-center gap-3 py-2.5">
-                    <ShoppingCheck week={week} foodId={item.foodId} checked={item.checked} label={`Got ${item.name}`} />
+                    <ShoppingCheck week={week} foodId={item.foodId} checked={item.checked} label={t("Got {name}", { name: item.name })} />
                     <IngredientSwatch food={{ name: item.name, color: item.color, group: item.group }} className="size-5" />
                     <span className={cn("grid min-w-0 flex-1 gap-0.5", item.checked && "text-muted-foreground line-through")}>
                       <span className="text-sm font-bold">{item.name}</span>
                       {flagged ? (
                         <span className="inline-flex items-center gap-1 text-xs font-bold text-warn no-underline">
                           <TriangleAlert className="size-3" aria-hidden />
-                          Contains {item.allergens.join(", ")}
+                          {t("Contains {allergens}", { allergens: item.allergens.map((a) => t(a)).join(", ") })}
                         </span>
                       ) : null}
                     </span>

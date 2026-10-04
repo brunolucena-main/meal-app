@@ -8,6 +8,7 @@ import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { formatAmount } from "@/lib/format"
 import type { RecipeItemView } from "@/server/recipes"
 import { removeIngredient, setIngredientGrams } from "../actions"
+import { useT } from "@/components/i18n-provider"
 
 /** One ingredient: grams field (saves on blur or Enter), quick portions, remove. */
 export function IngredientRow({
@@ -19,6 +20,7 @@ export function IngredientRow({
   item: RecipeItemView
   flagged: boolean
 }) {
+  const t = useT()
   const [grams, setGrams] = useState(String(item.grams))
   const [pending, startTransition] = useTransition()
 
@@ -38,12 +40,12 @@ export function IngredientRow({
           {flagged ? (
             <span className="inline-flex items-center gap-1 rounded-full bg-warn-soft px-2 py-0.5 text-[11px] font-bold text-warn">
               <TriangleAlert className="size-3" aria-hidden />
-              {item.allergens.join(", ")}
+              {item.allergens.map((a) => t(a)).join(", ")}
             </span>
           ) : null}
           {item.portions.length ? (
             <select
-              aria-label={`Set ${item.name} to a portion`}
+              aria-label={t("Set {name} to a portion", { name: item.name })}
               value=""
               onChange={(e) => {
                 const g = Number(e.target.value)
@@ -54,7 +56,7 @@ export function IngredientRow({
               }}
               className="h-7 max-w-56 rounded-full border border-border bg-card px-2 text-xs font-semibold text-muted-foreground"
             >
-              <option value="">Use a portion…</option>
+              <option value="">{t("Use a portion…")}</option>
               {item.portions.map((p) => (
                 <option key={p.id} value={p.gramWeight}>
                   {p.label} · {formatAmount(p.gramWeight)} g
@@ -66,7 +68,7 @@ export function IngredientRow({
       </span>
       <span className="flex items-center gap-1.5">
         <label className="sr-only" htmlFor={`grams-${item.id}`}>
-          Grams of {item.name}
+          {t("Grams of {name}", { name: item.name })}
         </label>
         <input
           id={`grams-${item.id}`}
@@ -84,7 +86,7 @@ export function IngredientRow({
         <span className="text-xs font-semibold text-muted-foreground">g</span>
         <button
           type="button"
-          aria-label={`Remove ${item.name}`}
+          aria-label={t("Remove {name}", { name: item.name })}
           disabled={pending}
           onClick={() => startTransition(() => removeIngredient(recipeId, item.id))}
           className="ml-1 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"

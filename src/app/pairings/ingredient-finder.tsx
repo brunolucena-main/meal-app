@@ -7,6 +7,7 @@ import { useMemo, useState } from "react"
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { Input } from "@/components/ui/input"
 import type { FoodGroup } from "@/lib/food/types"
+import { useT } from "@/components/i18n-provider"
 
 type Item = { id: number; name: string; color: string; group: FoodGroup; allergens: string[] }
 
@@ -14,6 +15,7 @@ const SUGGESTED = ["Spinach", "Tomato", "Lemon", "Salmon", "Dark chocolate", "Ba
 
 /** Filter-as-you-type over the curated ingredients; each result opens its pairings. */
 export function IngredientFinder({ items, basePath, param }: { items: Item[]; basePath: string; param: string }) {
+  const t = useT()
   const [query, setQuery] = useState("")
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
@@ -27,7 +29,7 @@ export function IngredientFinder({ items, basePath, param }: { items: Item[]; ba
     <div className="grid gap-3">
       <div className="relative max-w-md">
         <label htmlFor={`find-${param}`} className="sr-only">
-          Find an ingredient
+          {t("Find an ingredient")}
         </label>
         <Search className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
         <Input
@@ -35,7 +37,7 @@ export function IngredientFinder({ items, basePath, param }: { items: Item[]; ba
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          placeholder={`Find one of ${items.length} ingredients`}
+          placeholder={t("Find one of {n} ingredients", { n: items.length })}
           className="h-11 rounded-full bg-card pl-10 text-foreground"
         />
       </div>
@@ -50,7 +52,7 @@ export function IngredientFinder({ items, basePath, param }: { items: Item[]; ba
             </Link>
           </li>
         ))}
-        {query && shown.length === 0 ? <li className="text-sm text-on-night-muted">No ingredient matches &ldquo;{query}&rdquo;.</li> : null}
+        {query && shown.length === 0 ? <li className="text-sm text-on-night-muted">{t("No ingredient matches “{q}”.", { q: query })}</li> : null}
       </ul>
     </div>
   )

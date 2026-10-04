@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation"
 
 import { formatAmount } from "@/lib/format"
 import { compareHref, type CompareState } from "./url"
+import { useT } from "@/components/i18n-provider"
 
 /** Picks which USDA portion counts as "one serving" for a food. */
 export function PortionSelect({
@@ -17,10 +18,11 @@ export function PortionSelect({
   portions: { id: number; label: string; gramWeight: number }[]
   selected: number
 }) {
+  const t = useT()
   const router = useRouter()
   return (
     <select
-      aria-label="Serving"
+      aria-label={t("Serving")}
       value={selected}
       onChange={(e) =>
         router.push(compareHref({ ...state, portions: { ...state.portions, [foodId]: Number(e.target.value) } }), {
