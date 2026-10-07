@@ -44,6 +44,8 @@ export type CustomFoodInput = {
   nutrients: Partial<Record<NutrientKey, number>>
   portions: { label: string; gramWeight: number }[]
   allergens: string[]
+  /** FlavorGraph ingredient it corresponds to, for the recipe flavor guide; null when none. */
+  flavorId?: number | null
 }
 
 export type CustomFoodForm = {
@@ -58,6 +60,7 @@ export type CustomFoodForm = {
   salt?: string
   portions: { label: string; grams: string }[]
   allergens: string[]
+  flavorId?: string
 }
 
 export type ParseResult = { ok: true; food: CustomFoodInput } | { ok: false; error: string }
@@ -126,7 +129,10 @@ export function parseCustomFoodForm(form: CustomFoodForm): ParseResult {
   const named = tagAllergens(`${name} ${brand ?? ""}`)
   const allergens = ALLERGENS.filter((a: Allergen) => form.allergens.includes(a) || named.includes(a))
 
-  return { ok: true, food: { name, brand, category, nutrients, portions: portions.slice(0, MAX_PORTIONS), allergens } }
+  const flavor = Number(form.flavorId)
+  const flavorId = Number.isInteger(flavor) && flavor > 0 ? flavor : null
+
+  return { ok: true, food: { name, brand, category, nutrients, portions: portions.slice(0, MAX_PORTIONS), allergens, flavorId } }
 }
 
 /** Field text for a number: up to 3 decimals, no trailing zeros. */
@@ -140,10 +146,11 @@ export type CustomFoodFormValues = {
   nutrients: Partial<Record<NutrientKey, string>>
   portions: { label: string; grams: string }[]
   allergens: string[]
+  flavorId: string
 }
 
 export function toFormValues(food?: CustomFoodInput): CustomFoodFormValues {
-  if (!food) return { name: "", brand: "", category: "", nutrients: {}, portions: [], allergens: [] }
+  if (!food) return { name: "", brand: "", category: "", nutrients: {}, portions: [], allergens: [], flavorId: "" }
   return {
     name: food.name,
     brand: food.brand ?? "",
@@ -151,6 +158,7 @@ export function toFormValues(food?: CustomFoodInput): CustomFoodFormValues {
     nutrients: Object.fromEntries(Object.entries(food.nutrients).map(([k, v]) => [k, fieldText(v ?? 0)])),
     portions: food.portions.map((p) => ({ label: p.label, grams: fieldText(p.gramWeight) })),
     allergens: food.allergens,
+    flavorId: food.flavorId ? String(food.flavorId) : "",
   }
 }
 

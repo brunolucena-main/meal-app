@@ -60,6 +60,13 @@ describe("parseCustomFoodForm", () => {
     if (!ticked.ok) throw new Error(ticked.error)
     expect(ticked.food.allergens).toEqual(["hazelnut"])
   })
+
+  it("keeps the flavor match when one is picked", () => {
+    const picked = parseCustomFoodForm({ ...base, nutrients: { energy: "88" }, flavorId: "4" })
+    const none = parseCustomFoodForm({ ...base, nutrients: { energy: "88" }, flavorId: "" })
+    expect(picked.ok && picked.food.flavorId).toBe(4)
+    expect(none.ok && none.food.flavorId).toBeNull()
+  })
 })
 
 describe("custom food helpers", () => {
@@ -82,7 +89,7 @@ describe("custom food helpers", () => {
 
 describe("toFormValues", () => {
   it("round-trips through the parser", () => {
-    const r = parseCustomFoodForm({ ...base, nutrients: { energy: "46", sodium: "52" }, portions: [{ label: "1 glass", grams: "250" }] })
+    const r = parseCustomFoodForm({ ...base, nutrients: { energy: "46", sodium: "52" }, portions: [{ label: "1 glass", grams: "250" }], flavorId: "3" })
     if (!r.ok) throw new Error(r.error)
     const v = toFormValues(r.food)
     const again = parseCustomFoodForm({ ...v, basisGrams: "100" })

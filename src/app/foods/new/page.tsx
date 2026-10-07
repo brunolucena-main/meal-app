@@ -3,6 +3,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 
 import { toFormValues } from "@/lib/food/custom"
+import { flavorOptions } from "@/server/flavor"
 import { getT } from "@/server/i18n"
 import { saveCustomFood } from "../actions"
 import { CustomFoodForm } from "../custom-food-form"
@@ -13,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function NewFoodPage() {
-  const t = await getT()
+  const [t, options] = await Promise.all([getT(), flavorOptions()])
   return (
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <Link href="/foods" className="inline-flex items-center gap-1.5 justify-self-start text-sm font-semibold text-muted-foreground hover:text-foreground">
@@ -26,7 +27,7 @@ export default async function NewFoodPage() {
           {t("Add a food that isn't in the USDA list, like the brand of milk you buy. It then works everywhere: search, recipes, your days and comparisons.")}
         </p>
       </header>
-      <CustomFoodForm initial={toFormValues()} submitLabel={t("Save food")} action={saveCustomFood.bind(null, null)} />
+      <CustomFoodForm initial={toFormValues()} submitLabel={t("Save food")} action={saveCustomFood.bind(null, null)} flavorOptions={options} />
     </div>
   )
 }

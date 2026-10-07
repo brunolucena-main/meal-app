@@ -182,3 +182,17 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
   portions ("1 glass" = 250 g). Hazelnut tag from a checkbox or the name.
 - Deleting is refused while the food is in a recipe or on a day. Included in backups (version 2;
   version 1 files still restore).
+
+### Requested after custom foods
+- Substitutes failed for custom foods with few nutrients (canned tuna from its label: energy,
+  protein, fat, saturated fat, sodium): a match needed 8 shared nutrients. Now 8 or everything
+  the original reports (at least 4), coverage measured against the original. The label form
+  asks for 0 when the label says 0 or "no significant amount".
+- Recipe variants: "Make a variant" copies a recipe with its ingredients; variants form a
+  family (`recipes.parent_id`, migration 0004), listed on each recipe with what differs.
+  Replace on an ingredient row swaps the food, keeping amount and place.
+- Create section: Recipes moved into the purple block with the flavor pages. Recipe editor
+  has a Flavor guide (tastes, balance, goes with, rarely together, explore). Swap ideas in
+  Replace. Flavor pages opened from a recipe add to it (+ buttons, "Adding to" bar).
+- Custom foods can name their FlavorGraph equivalent ("Flavor match", migration 0005), so
+  label foods with local names join the flavor guide.

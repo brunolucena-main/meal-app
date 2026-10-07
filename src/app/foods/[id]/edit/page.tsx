@@ -6,6 +6,7 @@ import { notFound } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { customFoodDescription, isCustomFoodId, toFormValues } from "@/lib/food/custom"
 import { getCustomFoodRow } from "@/server/custom-foods"
+import { flavorOptions } from "@/server/flavor"
 import { getT } from "@/server/i18n"
 import { removeCustomFood, saveCustomFood } from "../../actions"
 import { CustomFoodForm } from "../../custom-food-form"
@@ -25,7 +26,7 @@ export async function generateMetadata(props: PageProps<"/foods/[id]/edit">): Pr
 
 export default async function EditFoodPage(props: PageProps<"/foods/[id]/edit">) {
   const t = await getT()
-  const [row, search] = await Promise.all([load(props), props.searchParams])
+  const [row, search, options] = await Promise.all([load(props), props.searchParams, flavorOptions()])
   const inUse = Number(Array.isArray(search.inUse) ? search.inUse[0] : search.inUse) || 0
 
   return (
@@ -38,7 +39,7 @@ export default async function EditFoodPage(props: PageProps<"/foods/[id]/edit">)
         <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Edit food")}</h1>
         <p className="text-muted-foreground">{t("Values are shown per 100 g. Changes apply everywhere the food is used, including past days.")}</p>
       </header>
-      <CustomFoodForm initial={toFormValues(row)} submitLabel={t("Save changes")} action={saveCustomFood.bind(null, row.id)} />
+      <CustomFoodForm initial={toFormValues(row)} submitLabel={t("Save changes")} action={saveCustomFood.bind(null, row.id)} flavorOptions={options} />
 
       {inUse > 0 ? (
         <p role="alert" className="rounded-2xl bg-warn-soft px-4 py-3 text-sm font-bold text-warn">

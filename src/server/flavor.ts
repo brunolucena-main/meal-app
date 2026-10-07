@@ -107,3 +107,13 @@ export async function getPartners(id: number): Promise<Pairing[]> {
     }
   })
 }
+
+/** Ingredient names for pickers (custom food flavor match); empty when the flavor data isn't imported. */
+export async function flavorOptions(): Promise<{ id: number; name: string }[]> {
+  try {
+    const result = await libsql.execute("SELECT id, name FROM flavor_ingredients WHERE curated = 1 ORDER BY name")
+    return result.rows.map((r) => ({ id: Number(r.id), name: String(r.name) }))
+  } catch {
+    return []
+  }
+}

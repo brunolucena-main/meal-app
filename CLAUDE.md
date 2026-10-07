@@ -18,15 +18,19 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
   - `nutrition/compare.ts` bases, best values, standouts; `similarity.ts` substitutes;
     `ranking.ts` best sources; `targets.ts` profile -> targets (DRIs); `recipe.ts`; `day.ts`
   - `food/` groups, colors, allergen tags, `custom.ts` (custom food form parsing, id range); `flavor/pairing.ts` aroma overlap; `flavor/tastes.ts`
-    taste profiles + balancing rules (opposites)
+    taste profiles + balancing rules (opposites, dish tastes, balance gaps); `flavor/guide.ts`
+    recipe flavor guide (matching recipe foods to FlavorGraph, ranking additions, bridges)
+  - `recipes/variants.ts` recipe families (variants), ingredient diffs
 - `src/server/` (DB access): `db/` libSQL + Drizzle (USDA schema + user schema with migrations
   in /drizzle, applied lazily by `ensureMigrated`), `foods.ts` search + portions, `catalog.ts` all
   food profiles (USDA in memory, custom foods read fresh), `custom-foods.ts` (your own foods:
   user table, ids above 900,000,000, merged into every food read), `settings.ts`, `recipes.ts`, `days.ts` (entries, shopping), `backup.ts`,
   `flavor.ts` (FlavorGraph queries), `flavor-graph.ts` (in-memory graph with variants folded:
-  opposites, bridges, swaps, map). In-memory caches live on globalThis: restart the dev server
-  after re-importing data or changing taste rules.
-- `src/app/`: pages per nav item; server actions in `actions.ts` files and `day-actions.ts`.
+  opposites, bridges, swaps, map), `flavor-guide.ts` (a recipe's flavor guide), `cooking.ts`
+  (cookie: the recipe the flavor pages add to). In-memory caches live on globalThis: restart the
+  dev server after re-importing data or changing taste rules.
+- `src/app/`: pages per nav item; server actions in `actions.ts` files, `day-actions.ts` and
+  `cooking-actions.ts`. `/recipes/[id]/explore?to=...` opens a flavor page for that recipe.
 - `scripts/`: `import-usda.ts`, `import-flavorgraph.ts`, `flavor-overrides.json`.
 - Tests: `*.test.ts` next to the code; `src/server/server.int.test.ts` runs against a temp
   copy of the database.
@@ -45,7 +49,10 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
 ## Design system
 - Base "Calm Coach": tokens in `src/app/globals.css`, Manrope, pill buttons, rounded
   cards (rounded-3xl), thick bars, plain-language status (always word + color).
-- Creative section: SAME look as the rest of the app (same cards, chips, bars), on a
+- Create section (purple sidebar block): Recipes, then Pairings, Opposites, Bridges, Flavor map.
+  The flavor pages serve recipes: each recipe has a Flavor guide, and opened from it the flavor
+  pages show an "Adding to" bar and + buttons. Recipe pages use the night sky too.
+- Creative look: SAME look as the rest of the app (same cards, chips, bars), on a
   stylized (flat, wallpaper-like) starry pattern over a very dark purple (`--night`), the same
   color the sidebar's purple section fades into at the bottom; no divider between them.
   Both paint the same viewport-anchored `.night-gradient` (background-attachment: fixed),

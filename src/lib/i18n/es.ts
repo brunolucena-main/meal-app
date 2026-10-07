@@ -548,6 +548,11 @@ export const es: Record<string, string> = {
   "Back to the recipe": "Volver a la receta",
   "Done": "Listo",
 
+  // ---- Custom food flavor match
+  "Flavor match (optional)": "Equivalente de sabor (opcional)",
+  "None": "Ninguno",
+  "What this food is, so recipes using it get flavor ideas: e.g. Tuna for canned tuna.": "Qué alimento es, para que las recetas que lo usan reciban ideas de sabor: p. ej. Tuna para atún en lata.",
+
   // ---- USDA food categories
   "American Indian/Alaska Native Foods": "Alimentos de pueblos nativos de EE. UU.",
   "Baby Foods": "Alimentos infantiles",

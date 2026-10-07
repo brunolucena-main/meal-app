@@ -20,6 +20,7 @@ function readForm(form: FormData) {
     salt: str("salt"),
     portions: labels.map((label, i) => ({ label, grams: grams[i] ?? "" })),
     allergens: form.getAll("allergen").map(String),
+    flavorId: str("flavorId"),
   }
 }
 

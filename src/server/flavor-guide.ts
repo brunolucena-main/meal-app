@@ -3,6 +3,8 @@ import { bestBridge, fit, flavorMatcher, rankCompanions, rarePairs } from "@/lib
 import { balanceGaps, dishTasteProfile, type BalanceGap, type TasteProfile } from "@/lib/flavor/tastes"
 import type { Targets } from "@/lib/nutrition/targets"
 import { getCatalog } from "@/server/catalog"
+import { db, ensureMigrated } from "@/server/db/client"
+import { customFoods } from "@/server/db/user-schema"
 import { getFlavorGraph, pairable, swaps, type Node } from "@/server/flavor-graph"
 import type { RecipeView } from "@/server/recipes"
 
@@ -40,12 +42,19 @@ export async function flavorGuide(recipe: RecipeView, settings: { allergies: str
   }
   const catalog = new Map((await getCatalog()).map((f) => [f.id, f]))
   const match = flavorMatcher([...graph.ingredients.values()], (id) => catalog.get(id)?.description)
+  // Your own foods say what they are (custom food form, "Flavor match").
+  await ensureMigrated()
+  const linked = new Map(
+    (await db.select({ id: customFoods.id, flavorId: customFoods.flavorId }).from(customFoods))
+      .filter((f) => f.flavorId !== null)
+      .map((f) => [f.id, f.flavorId!])
+  )
 
   const matched: FlavorGuide["matched"] = []
   const unmatched: string[] = []
   for (const foodId of new Set(recipe.items.map((i) => i.foodId))) {
     const item = recipe.items.find((i) => i.foodId === foodId)!
-    const id = match({ id: foodId, description: item.name })
+    const id = linked.get(foodId) ?? match({ id: foodId, description: item.name })
     const node = id === null ? undefined : graph.ingredients.get(id)
     if (node && !matched.some((m) => m.ingredient.id === node.id)) matched.push({ foodId, ingredient: node })
     else if (!node) unmatched.push(item.name)

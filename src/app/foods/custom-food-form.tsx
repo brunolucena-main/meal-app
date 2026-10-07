@@ -22,9 +22,12 @@ export function CustomFoodForm({
   initial,
   submitLabel,
   action,
+  flavorOptions,
 }: {
   initial: CustomFoodFormValues
   submitLabel: string
+  /** Curated FlavorGraph ingredients, alphabetical; empty when the flavor data isn't imported. */
+  flavorOptions: { id: number; name: string }[]
   action: (form: FormData) => Promise<{ error?: string }>
 }) {
   const t = useT()
@@ -120,6 +123,22 @@ export function CustomFoodForm({
             ))}
           </fieldset>
         </div>
+        {flavorOptions.length ? (
+          <label className="grid gap-1.5 text-sm font-bold sm:max-w-[calc(50%-0.5rem)]">
+            {t("Flavor match (optional)")}
+            <select name="flavorId" defaultValue={initial.flavorId} aria-describedby="flavor-hint" className={field}>
+              <option value="">{t("None")}</option>
+              {flavorOptions.map((o) => (
+                <option key={o.id} value={o.id}>
+                  {o.name}
+                </option>
+              ))}
+            </select>
+            <span id="flavor-hint" className="text-xs font-medium text-muted-foreground">
+              {t("What this food is, so recipes using it get flavor ideas: e.g. Tuna for canned tuna.")}
+            </span>
+          </label>
+        ) : null}
       </section>
 
       <section aria-labelledby="label-h" className="surface grid gap-4 rounded-3xl p-5">

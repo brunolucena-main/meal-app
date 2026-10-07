@@ -106,6 +106,8 @@ describe.skipIf(!hasDb)("database layer", () => {
     expect(item?.portion?.label).toBe("1 glass")
 
     expect(await m.custom.deleteCustomFood(id)).toEqual({ ok: false, usedBy: 1 })
+    await m.custom.updateCustomFood(id, { ...(await m.custom.getCustomFoodRow(id))!, flavorId: 42 })
+    expect((await m.custom.getCustomFoodRow(id))!.flavorId).toBe(42)
     expect((await m.backup.exportData()).customFoods.map((f) => f.id)).toEqual([id])
   })
 

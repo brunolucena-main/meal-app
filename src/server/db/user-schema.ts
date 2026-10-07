@@ -104,6 +104,8 @@ export const customFoods = sqliteTable("custom_foods", {
   nutrients: text("nutrients", { mode: "json" }).$type<Partial<Record<string, number>>>().notNull(),
   portions: text("portions", { mode: "json" }).$type<{ label: string; gramWeight: number }[]>().notNull(),
   allergens: text("allergens", { mode: "json" }).$type<string[]>().notNull(),
+  /** The FlavorGraph ingredient it is (canned tuna -> tuna), for flavor ideas in recipes. */
+  flavorId: integer("flavor_id"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 })

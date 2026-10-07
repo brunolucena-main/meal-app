@@ -10,8 +10,10 @@ in English or Spanish (switch at the bottom of the sidebar).
   (a brand you buy) from their nutrition label.
 - **Find better options**: nutritional substitutes ("like spinach, but more protein") and the
   best sources for whatever you're short on today.
-- **Cook creatively**: flavor pairings, taste opposites, bridges between ingredients and a
-  flavor map, from FlavorGraph's recipe and aroma data.
+- **Cook creatively**: recipes with variants and a flavor guide (what balances the dish, what
+  goes with its ingredients), plus flavor pairings, taste opposites, bridges between ingredients
+  and a flavor map, all from FlavorGraph's recipe and aroma data, and all able to add to the
+  recipe you're making.
 
 ## Run it
 
