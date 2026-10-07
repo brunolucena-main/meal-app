@@ -1,4 +1,4 @@
-import { ArrowLeft, Trash2 } from "lucide-react"
+import { ArrowLeft, GitBranch, Trash2 } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -7,10 +7,12 @@ import { NutrientTable } from "@/components/nutrition/nutrient-table"
 import { Button } from "@/components/ui/button"
 import { formatAmount } from "@/lib/format"
 import type { NutrientKey } from "@/lib/nutrition/nutrients"
+import type { T } from "@/lib/i18n"
+import { familyId, groupFamilies, ingredientDiff, shortFoodName } from "@/lib/recipes/variants"
 import { cn } from "@/lib/utils"
-import { getRecipe } from "@/server/recipes"
+import { getRecipe, listRecipes, type RecipeView } from "@/server/recipes"
 import { getSettings } from "@/server/settings"
-import { removeRecipe, saveRecipeDetails } from "../actions"
+import { makeVariant, removeRecipe, saveRecipeDetails } from "../actions"
 import { AddIngredient } from "./add-ingredient"
 import { IngredientRow } from "./ingredient-row"
 import { getT } from "@/server/i18n"
@@ -38,7 +40,8 @@ const field = "h-10 w-full rounded-xl border border-input bg-card px-3 text-sm f
 
 export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
   const t = await getT()
-  const [recipe, settings, search] = await Promise.all([load(props), getSettings(), props.searchParams])
+  const [recipe, settings, search, all] = await Promise.all([load(props), getSettings(), props.searchParams, listRecipes()])
+  const family = groupFamilies(all.filter((r) => familyId(r) === familyId(recipe)))
   const inUse = Number(Array.isArray(search.inUse) ? search.inUse[0] : search.inUse) || 0
   const serving = recipe.kind === "meal" ? t("Per the meal") : t("Per one serving")
   const partialCount = Object.keys(recipe.nutrition.partial).length
@@ -119,6 +122,8 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
             </p>
           </section>
 
+          <Variants recipe={recipe} family={family} t={t} />
+
           {inUse > 0 ? (
             <p role="alert" className="rounded-2xl bg-warn-soft px-4 py-3 text-sm font-bold text-warn">
               {t("Used on {n} planned or logged items. Remove it from those days first, so your log stays accurate.", { n: inUse })}
@@ -171,5 +176,64 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
         </section>
       </div>
     </div>
+  )
+}
+
+/** The recipe's family (src/lib/recipes/variants.ts): each sibling with what it changes, and a copy button. */
+function Variants({ recipe, family, t }: { recipe: RecipeView; family: RecipeView[]; t: T }) {
+  const others = family.filter((r) => r.id !== recipe.id)
+  const items = (r: RecipeView) => r.items.map((i) => ({ foodId: i.foodId, name: shortFoodName(i.name), grams: i.grams }))
+  return (
+    <section aria-labelledby="variants-h" className="surface grid gap-3 rounded-3xl p-5">
+      <h2 id="variants-h" className="text-lg font-extrabold">
+        {t("Variants")}
+      </h2>
+      {others.length ? (
+        <ul className="grid gap-2">
+          {others.map((r) => {
+            const diff = ingredientDiff(items(recipe), items(r))
+            const changes = [
+              ...diff.added.map((i) => `+ ${i.name}`),
+              ...diff.removed.map((i) => `− ${i.name}`),
+              ...diff.changed.map((c) => `${c.name} ${formatAmount(c.from)} → ${formatAmount(c.to)} g`),
+            ]
+            return (
+              <li key={r.id}>
+                <Link href={`/recipes/${r.id}`} className="grid gap-0.5 rounded-2xl border border-border px-4 py-2.5 hover:bg-muted">
+                  <span className="flex items-baseline justify-between gap-3">
+                    <span className="font-bold">{r.name}</span>
+                    <span className="text-sm whitespace-nowrap text-muted-foreground tabular-nums">
+                      {formatAmount(r.perServing.energy ?? 0)} kcal
+                    </span>
+                  </span>
+                  <span className="text-xs text-muted-foreground">{changes.length ? changes.join(" · ") : t("Same ingredients")}</span>
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          {t("Try a change without losing this version: a variant copies every ingredient, then you swap or adjust what differs.")}
+        </p>
+      )}
+      <form action={makeVariant.bind(null, recipe.id)} className="flex flex-wrap items-center gap-2">
+        <label htmlFor="variant-name" className="sr-only">
+          {t("Variant name")}
+        </label>
+        <input
+          id="variant-name"
+          name="name"
+          required
+          maxLength={120}
+          defaultValue={t("{name} (variant)", { name: recipe.name })}
+          className={cn(field, "min-w-0 flex-1")}
+        />
+        <Button type="submit" variant="outline">
+          <GitBranch aria-hidden />
+          {t("Make a variant")}
+        </Button>
+      </form>
+    </section>
   )
 }

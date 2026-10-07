@@ -1,10 +1,11 @@
-import { ChefHat, TriangleAlert, Utensils } from "lucide-react"
+import { ChefHat, GitBranch, TriangleAlert, Utensils } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { Button } from "@/components/ui/button"
 import { formatAmount } from "@/lib/format"
+import { groupFamilies } from "@/lib/recipes/variants"
 import { listRecipes, type RecipeView } from "@/server/recipes"
 import type { T } from "@/lib/i18n"
 import { getSettings } from "@/server/settings"
@@ -19,8 +20,11 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function RecipesPage() {
   const t = await getT()
   const [all, settings] = await Promise.all([listRecipes(), getSettings()])
-  const meals = all.filter((r) => r.kind === "meal")
-  const recipes = all.filter((r) => r.kind === "recipe")
+  // Variants sit right after the recipe they were made from.
+  const grouped = groupFamilies(all)
+  const meals = grouped.filter((r) => r.kind === "meal")
+  const recipes = grouped.filter((r) => r.kind === "recipe")
+  const names = new Map(all.map((r) => [r.id, r.name]))
 
   return (
     <div className="mx-auto grid max-w-5xl gap-8 px-4 py-8 md:px-10 md:py-12">
@@ -56,15 +60,27 @@ export default async function RecipesPage() {
         </section>
       ) : (
         <>
-          <RecipeList title={t("Reusable meals")} items={meals} allergies={settings.allergies} t={t} />
-          <RecipeList title={t("Recipes")} items={recipes} allergies={settings.allergies} t={t} />
+          <RecipeList title={t("Reusable meals")} items={meals} names={names} allergies={settings.allergies} t={t} />
+          <RecipeList title={t("Recipes")} items={recipes} names={names} allergies={settings.allergies} t={t} />
         </>
       )}
     </div>
   )
 }
 
-function RecipeList({ title, items, allergies, t }: { title: string; items: RecipeView[]; allergies: string[]; t: T }) {
+function RecipeList({
+  title,
+  items,
+  names,
+  allergies,
+  t,
+}: {
+  title: string
+  items: RecipeView[]
+  names: Map<number, string>
+  allergies: string[]
+  t: T
+}) {
   if (!items.length) return null
   return (
     <section className="grid gap-3">
@@ -84,6 +100,12 @@ function RecipeList({ title, items, allergies, t }: { title: string; items: Reci
                     </span>
                   ) : null}
                 </span>
+                {r.parentId !== null && names.has(r.parentId) ? (
+                  <span className="-mt-2 inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                    <GitBranch className="size-3" aria-hidden />
+                    {t("Variant of {name}", { name: names.get(r.parentId)! })}
+                  </span>
+                ) : null}
                 <span className="flex flex-wrap gap-1">
                   {r.items.slice(0, 8).map((i) => (
                     <IngredientSwatch key={i.id} food={{ name: i.name, color: i.color, group: i.group }} className="size-5" />

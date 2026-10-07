@@ -31,6 +31,11 @@ export const recipes = sqliteTable("recipes", {
   /** Weight of the finished dish, when cooking changes it; used for per-100 g values. */
   cookedGrams: real("cooked_grams"),
   notes: text("notes"),
+  /**
+   * Set on variants: the recipe of the family they were made from ("Yogurt bowl, raspberries"
+   * from "Yogurt bowl, blueberries"). Always the family's first recipe, never a variant.
+   */
+  parentId: integer("parent_id"),
   createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
   updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
 })

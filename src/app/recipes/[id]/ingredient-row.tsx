@@ -1,13 +1,14 @@
 "use client"
 
-import { TriangleAlert, X } from "lucide-react"
+import { Replace, TriangleAlert, X } from "lucide-react"
 import Link from "next/link"
 import { useState, useTransition } from "react"
 
+import { FoodPicker } from "@/components/food/food-picker"
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { formatAmount } from "@/lib/format"
 import type { RecipeItemView } from "@/server/recipes"
-import { removeIngredient, setIngredientGrams } from "../actions"
+import { removeIngredient, replaceIngredient, setIngredientGrams } from "../actions"
 import { useT } from "@/components/i18n-provider"
 
 /** One ingredient: grams field (saves on blur or Enter), quick portions, remove. */
@@ -22,6 +23,7 @@ export function IngredientRow({
 }) {
   const t = useT()
   const [grams, setGrams] = useState(String(item.grams))
+  const [replacing, setReplacing] = useState(false)
   const [pending, startTransition] = useTransition()
 
   function commit(value: number) {
@@ -86,14 +88,39 @@ export function IngredientRow({
         <span className="text-xs font-semibold text-muted-foreground">g</span>
         <button
           type="button"
+          aria-label={t("Replace {name}", { name: item.name })}
+          aria-expanded={replacing}
+          title={t("Replace, keeping the amount")}
+          onClick={() => setReplacing(!replacing)}
+          className={`ml-1 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground ${replacing ? "bg-muted text-foreground" : ""}`}
+        >
+          <Replace className="size-4" aria-hidden />
+        </button>
+        <button
+          type="button"
           aria-label={t("Remove {name}", { name: item.name })}
           disabled={pending}
           onClick={() => startTransition(() => removeIngredient(recipeId, item.id))}
-          className="ml-1 grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="grid size-8 place-items-center rounded-full text-muted-foreground hover:bg-muted hover:text-foreground"
         >
           <X className="size-4" aria-hidden />
         </button>
       </span>
+      {replacing ? (
+        <div className="col-span-3 grid gap-1 pl-10">
+          <FoodPicker
+            id={`replace-${item.id}`}
+            label={t("Replace {name} with", { name: item.name })}
+            placeholder={t("Replace with, e.g. raspberries")}
+            autoFocus
+            onPick={(hit) => {
+              setReplacing(false)
+              startTransition(() => replaceIngredient(recipeId, item.id, hit.id))
+            }}
+          />
+          <span className="text-xs text-muted-foreground">{t("Keeps {n} g and the ingredient's place in the list.", { n: formatAmount(item.grams) })}</span>
+        </div>
+      ) : null}
     </li>
   )
 }

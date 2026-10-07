@@ -1,4 +1,4 @@
-import { asc, count, desc, eq, inArray, max } from "drizzle-orm"
+import { and, asc, count, desc, eq, inArray, max, ne } from "drizzle-orm"
 
 import { per100g, perServing, recipeNutrition, type RecipeNutrition } from "@/lib/nutrition/recipe"
 import type { FoodGroup } from "@/lib/food/types"
@@ -27,6 +27,8 @@ export type RecipeView = {
   servings: number
   cookedGrams: number | null
   notes: string | null
+  /** The family's first recipe when this is a variant (src/lib/recipes/variants.ts). */
+  parentId: number | null
   items: RecipeItemView[]
   nutrition: RecipeNutrition
   perServing: RecipeNutrition["totals"]
@@ -65,6 +67,7 @@ function build(
     servings: row.servings,
     cookedGrams: row.cookedGrams,
     notes: row.notes,
+    parentId: row.parentId,
     items: views,
     nutrition,
     perServing: perServing(nutrition.totals, row.servings),
@@ -129,10 +132,48 @@ export async function recipeUsage(id: number): Promise<number> {
 export async function deleteRecipe(id: number): Promise<{ ok: true } | { ok: false; usedBy: number }> {
   const usedBy = await recipeUsage(id)
   if (usedBy > 0) return { ok: false, usedBy }
+  // The family's first recipe is going: its oldest variant takes its place.
+  const variants = await db.select({ id: recipes.id }).from(recipes).where(eq(recipes.parentId, id)).orderBy(asc(recipes.id))
+  if (variants.length) {
+    const [heir] = variants
+    await db.update(recipes).set({ parentId: null }).where(eq(recipes.id, heir.id))
+    await db.update(recipes).set({ parentId: heir.id }).where(and(eq(recipes.parentId, id), ne(recipes.id, heir.id)))
+  }
   // Delete children explicitly: SQLite only cascades with foreign keys switched on.
   await db.delete(recipeItems).where(eq(recipeItems.recipeId, id))
   await db.delete(recipes).where(eq(recipes.id, id))
   return { ok: true }
+}
+
+/**
+ * Copies a recipe with all its ingredients under a new name, as a variant in the same family.
+ * Returns the new recipe's id, or null when the original doesn't exist.
+ */
+export async function createVariant(id: number, name: string): Promise<number | null> {
+  await ensureMigrated()
+  const row = (await db.select().from(recipes).where(eq(recipes.id, id)).limit(1))[0]
+  if (!row) return null
+  const items = await db.select().from(recipeItems).where(eq(recipeItems.recipeId, id)).orderBy(asc(recipeItems.position))
+  const now = new Date()
+  return db.transaction(async (tx) => {
+    const [copy] = await tx
+      .insert(recipes)
+      .values({
+        kind: row.kind,
+        name,
+        servings: row.servings,
+        cookedGrams: row.cookedGrams,
+        notes: row.notes,
+        parentId: row.parentId ?? row.id,
+        createdAt: now,
+        updatedAt: now,
+      })
+      .returning({ id: recipes.id })
+    for (const item of items) {
+      await tx.insert(recipeItems).values({ recipeId: copy.id, foodId: item.foodId, grams: item.grams, position: item.position })
+    }
+    return copy.id
+  })
 }
 
 export async function addRecipeItem(recipeId: number, foodId: number, grams: number) {
@@ -146,6 +187,12 @@ export async function addRecipeItem(recipeId: number, foodId: number, grams: num
 
 export async function updateRecipeItem(itemId: number, grams: number) {
   const [item] = await db.update(recipeItems).set({ grams }).where(eq(recipeItems.id, itemId)).returning()
+  if (item) await updateRecipe(item.recipeId, {})
+}
+
+/** Swaps the ingredient's food, keeping its amount and place ("raspberries instead of blueberries"). */
+export async function replaceRecipeItem(itemId: number, foodId: number) {
+  const [item] = await db.update(recipeItems).set({ foodId }).where(eq(recipeItems.id, itemId)).returning()
   if (item) await updateRecipe(item.recipeId, {})
 }
 

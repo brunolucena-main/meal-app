@@ -23,11 +23,13 @@ export function FoodPicker({
   label,
   placeholder,
   onPick,
+  autoFocus,
 }: {
   id: string
   label: string
   placeholder: string
   onPick: (food: FoodHit) => void
+  autoFocus?: boolean
 }) {
   const listId = useId()
   const [query, setQuery] = useState("")
@@ -79,6 +81,7 @@ export function FoodPicker({
         aria-autocomplete="list"
         aria-activedescendant={showList ? `${listId}-${active}` : undefined}
         autoComplete="off"
+        autoFocus={autoFocus}
         value={query}
         placeholder={placeholder}
         onChange={(e) => {

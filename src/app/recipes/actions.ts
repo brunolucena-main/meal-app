@@ -6,8 +6,10 @@ import { redirect } from "next/navigation"
 import {
   addRecipeItem,
   createRecipe,
+  createVariant,
   deleteRecipe,
   removeRecipeItem,
+  replaceRecipeItem,
   updateRecipe,
   updateRecipeItem,
   type RecipeKind,
@@ -43,6 +45,20 @@ export async function setIngredientGrams(recipeId: number, itemId: number, grams
   if (!Number.isFinite(grams) || grams < 0) return
   await updateRecipeItem(itemId, clamp(grams, 0, 10000))
   revalidatePath(`/recipes/${recipeId}`)
+}
+
+export async function replaceIngredient(recipeId: number, itemId: number, foodId: number) {
+  await replaceRecipeItem(itemId, foodId)
+  revalidatePath(`/recipes/${recipeId}`)
+}
+
+/** Copies the recipe as a variant and opens the copy. */
+export async function makeVariant(id: number, form: FormData) {
+  const name = String(form.get("name") ?? "").trim().slice(0, 120) || "Untitled"
+  const copy = await createVariant(id, name)
+  if (copy === null) return
+  revalidatePath("/recipes", "layout")
+  redirect(`/recipes/${copy}`)
 }
 
 export async function removeIngredient(recipeId: number, itemId: number) {

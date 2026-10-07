@@ -109,6 +109,41 @@ describe.skipIf(!hasDb)("database layer", () => {
     expect((await m.backup.exportData()).customFoods.map((f) => f.id)).toEqual([id])
   })
 
+  it("branches a recipe into variants and keeps the family when the first one goes", async () => {
+    const [oats] = await m.foods.searchFoods("oats rolled", 1)
+    const [milk] = await m.foods.searchFoods("milk whole", 1)
+    const [spinach] = await m.foods.searchFoods("spinach", 1)
+    const root = await m.recipes.createRecipe("recipe")
+    await m.recipes.updateRecipe(root, { name: "Oats", servings: 3, notes: "Soak overnight" })
+    await m.recipes.addRecipeItem(root, oats.id, 80)
+    await m.recipes.addRecipeItem(root, milk.id, 250)
+
+    const a = (await m.recipes.createVariant(root, "Oats, spinach"))!
+    const variant = (await m.recipes.getRecipe(a))!
+    expect(variant).toMatchObject({ name: "Oats, spinach", servings: 3, notes: "Soak overnight", parentId: root })
+    expect(variant.items.map((i) => [i.foodId, i.grams])).toEqual([
+      [oats.id, 80],
+      [milk.id, 250],
+    ])
+    await m.recipes.replaceRecipeItem(variant.items[1].id, spinach.id)
+    expect((await m.recipes.getRecipe(a))!.items.map((i) => [i.foodId, i.grams])).toEqual([
+      [oats.id, 80],
+      [spinach.id, 250],
+    ])
+    // The original is untouched.
+    expect((await m.recipes.getRecipe(root))!.items.map((i) => i.foodId)).toEqual([oats.id, milk.id])
+
+    // A variant of a variant joins the same family.
+    const b = (await m.recipes.createVariant(a, "Oats, spinach, more"))!
+    expect((await m.recipes.getRecipe(b))!.parentId).toBe(root)
+
+    expect((await m.recipes.deleteRecipe(root)).ok).toBe(true)
+    expect((await m.recipes.getRecipe(a))!.parentId).toBeNull()
+    expect((await m.recipes.getRecipe(b))!.parentId).toBe(a)
+    await m.recipes.deleteRecipe(b)
+    await m.recipes.deleteRecipe(a)
+  })
+
   it("round-trips a backup", async () => {
     const before = await m.backup.exportData()
     await m.backup.importData(JSON.parse(JSON.stringify(before)))

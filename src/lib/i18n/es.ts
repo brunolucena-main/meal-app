@@ -508,6 +508,20 @@ export const es: Record<string, string> = {
   "Each portion needs its weight in grams.": "Cada porción necesita su peso en gramos.",
   "Only your own foods can be edited.": "Solo puedes editar tus propios alimentos.",
 
+  // ---- Recipe variants and replacing ingredients
+  "Variants": "Variantes",
+  "Make a variant": "Crear una variante",
+  "Variant name": "Nombre de la variante",
+  "Variant of {name}": "Variante de {name}",
+  "{name} (variant)": "{name} (variante)",
+  "Same ingredients": "Mismos ingredientes",
+  "Try a change without losing this version: a variant copies every ingredient, then you swap or adjust what differs.": "Prueba un cambio sin perder esta versión: una variante copia todos los ingredientes y luego cambias o ajustas lo que difiere.",
+  "Replace {name}": "Reemplazar {name}",
+  "Replace {name} with": "Reemplazar {name} por",
+  "Replace, keeping the amount": "Reemplazar manteniendo la cantidad",
+  "Replace with, e.g. raspberries": "Reemplazar por, p. ej. frambuesas",
+  "Keeps {n} g and the ingredient's place in the list.": "Mantiene {n} g y el lugar del ingrediente en la lista.",
+
   // ---- USDA food categories
   "American Indian/Alaska Native Foods": "Alimentos de pueblos nativos de EE. UU.",
   "Baby Foods": "Alimentos infantiles",
