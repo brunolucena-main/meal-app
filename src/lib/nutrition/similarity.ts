@@ -5,8 +5,11 @@
  * target (so mg and µg are comparable and matter in proportion to what you need), then
  * log-compressed so one huge value (vitamin K in greens) can't drown out everything else.
  * Similarity is exp(-distance): 1 for identical profiles, falling toward 0. Distance is a
- * weighted RMS over the nutrients both foods report, and the score is discounted when the
- * foods share few reported nutrients. Missing values are skipped, never treated as zero.
+ * weighted RMS over the nutrients both foods report, and the score is discounted by how much of
+ * the original's profile the candidate covers. Missing values are skipped, never treated as zero.
+ *
+ * Foods copied from a label often report only 5-8 nutrients, so the bar for "enough shared
+ * nutrients" is 8 or everything the original reports, whichever is lower (but at least 4).
  */
 import { NUTRIENT_BY_KEY, type NutrientKey } from "./nutrients"
 import type { Targets } from "./targets"
@@ -45,6 +48,8 @@ export const SIMILARITY_FEATURES: [NutrientKey, number][] = [
 const FALLBACK_SCALE: Partial<Record<NutrientKey, number>> = { sugars: 50 }
 
 export const MIN_SHARED_FEATURES = 8
+/** Below this many scored nutrients a food can't be compared at all. */
+export const MIN_FEATURES = 4
 
 export type Vector = Map<NutrientKey, number>
 
@@ -59,7 +64,13 @@ export function toVector(profile: Profile, targets: Targets): Vector {
   return v
 }
 
-/** 0-1, 1 = same profile. Null when the foods share too few reported nutrients to judge. */
+/** Whether a food reports enough scored nutrients to look for foods like it. */
+export const comparable = (v: Vector) => v.size >= MIN_FEATURES
+
+/**
+ * 0-1, 1 = same profile, for `b` as a stand-in for `a` (the original). Null when they share
+ * too few reported nutrients to judge. Symmetric when both report the same nutrients.
+ */
 export function similarity(a: Vector, b: Vector): number | null {
   let sum = 0
   let weights = 0
@@ -72,9 +83,8 @@ export function similarity(a: Vector, b: Vector): number | null {
     weights += weight
     shared++
   }
-  if (shared < MIN_SHARED_FEATURES) return null
-  const union = new Set([...a.keys(), ...b.keys()]).size
-  return Math.exp(-Math.sqrt(sum / weights)) * Math.sqrt(shared / union)
+  if (!comparable(a) || shared < Math.min(MIN_SHARED_FEATURES, a.size)) return null
+  return Math.exp(-Math.sqrt(sum / weights)) * Math.sqrt(shared / a.size)
 }
 
 /** USDA names that open with a category ("Fish, salmon, ...") need two parts to name the food. */

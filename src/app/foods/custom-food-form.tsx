@@ -128,7 +128,7 @@ export function CustomFoodForm({
             {t("Nutrition label")}
           </h2>
           <p className="text-sm text-muted-foreground">
-            {t("Copy the values from the package. Leave a field blank when the label doesn't list it: blank means no data, not zero.")}
+            {t("Copy the values from the package. When the label says 0 or “no significant amount”, enter 0. Leave a field blank only when the label doesn't list it: blank means no data, not zero.")}
           </p>
         </div>
         <label className="flex flex-wrap items-center gap-2 text-sm font-bold">

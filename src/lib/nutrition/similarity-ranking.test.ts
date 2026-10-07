@@ -27,6 +27,18 @@ describe("similarity", () => {
 
   it("refuses to judge with too few shared nutrients", () => {
     expect(similarity(toVector(spinach, targets), toVector({ energy: 20, protein: 2 }, targets))).toBeNull()
+    expect(similarity(toVector({ energy: 20, protein: 2, fat: 1 }, targets), toVector(spinach, targets))).toBeNull()
+  })
+
+  it("compares a food copied from a label (few nutrients) with fully reported ones", () => {
+    // Canned tuna in water from a label: no carbs, no vitamins.
+    const label = toVector({ energy: 88, protein: 20.7, fat: 0.6, satFat: 0.23, sodium: 467 }, targets)
+    const usdaTuna = toVector({ ...base, energy: 86, protein: 19.4, carbs: 0, fat: 0.96, satFat: 0.23, sodium: 247, potassium: 179, calcium: 14, iron: 1.5 }, targets)
+    const tunaScore = similarity(label, usdaTuna)
+    expect(tunaScore).not.toBeNull()
+    // The USDA food reporting more nutrients than the label is not held against it.
+    expect(tunaScore!).toBeGreaterThan(0.6)
+    expect(tunaScore!).toBeGreaterThan(similarity(label, toVector(oil, targets)) ?? 0)
   })
 })
 

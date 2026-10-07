@@ -7,7 +7,8 @@ import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { Button } from "@/components/ui/button"
 import { formatAmount } from "@/lib/format"
 import { NUTRIENT_BY_KEY, NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
-import { similarity, toVector, variantKey } from "@/lib/nutrition/similarity"
+import { isCustomFoodId } from "@/lib/food/custom"
+import { comparable, MIN_FEATURES, similarity, toVector, variantKey } from "@/lib/nutrition/similarity"
 import { getCatalog } from "@/server/catalog"
 import { getSettings } from "@/server/settings"
 import { getT } from "@/server/i18n"
@@ -131,7 +132,16 @@ export default async function SubstitutesPage(props: PageProps<"/substitutes">) 
         <Button type="submit">{t("Find")}</Button>
       </form>
 
-      {top.length === 0 ? (
+      {!comparable(sourceVector) ? (
+        <p className="text-muted-foreground">
+          {t("This food reports too few nutrients to compare (at least {n} of energy, protein, carbohydrate, fat, fiber, sugars, sodium and the main vitamins and minerals).", { n: MIN_FEATURES })}{" "}
+          {isCustomFoodId(source.id) ? (
+            <Link href={`/foods/${source.id}/edit`} className="font-semibold text-primary hover:underline">
+              {t("Add more values from its label")}
+            </Link>
+          ) : null}
+        </p>
+      ) : top.length === 0 ? (
         <p className="text-muted-foreground">
           {t("No foods match. Try searching all foods, or drop the “more” or “less” condition.")}
         </p>

@@ -468,12 +468,15 @@ export const es: Record<string, string> = {
   Other: "Otros",
 
   // ---- Custom foods (form, pages and form errors)
+  "This food reports too few nutrients to compare (at least {n} of energy, protein, carbohydrate, fat, fiber, sugars, sodium and the main vitamins and minerals).":
+    "Este alimento indica muy pocos nutrientes para compararlo (hacen falta al menos {n} entre energía, proteínas, hidratos, grasas, fibra, azúcares, sodio y las principales vitaminas y minerales).",
+  "Add more values from its label": "Añade más valores de su etiqueta",
   "Add a food that isn't in the USDA list, like the brand of milk you buy. It then works everywhere: search, recipes, your days and comparisons.": "Añade un alimento que no está en la lista del USDA, como la marca de leche que compras. Después funciona en todas partes: búsqueda, recetas, tus días y comparaciones.",
   "Add a portion": "Añadir una porción",
   "Allergens": "Alérgenos",
   "Brand or store (optional)": "Marca o tienda (opcional)",
   "Category": "Categoría",
-  "Copy the values from the package. Leave a field blank when the label doesn't list it: blank means no data, not zero.": "Copia los valores del envase. Deja en blanco lo que la etiqueta no indique: en blanco significa sin datos, no cero.",
+  "Copy the values from the package. When the label says 0 or “no significant amount”, enter 0. Leave a field blank only when the label doesn't list it: blank means no data, not zero.": "Copia los valores del envase. Si la etiqueta dice 0 o «no aporta cantidades significativas», escribe 0. Deja en blanco solo lo que la etiqueta no indique: en blanco significa sin datos, no cero.",
   "Delete food": "Eliminar alimento",
   "Edit": "Editar",
   "Edit food": "Editar alimento",
