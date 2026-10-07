@@ -17,11 +17,12 @@ Personal nutrition planner + creative cooking app. Single user, runs locally on 
   - `nutrition/nutrients.ts` 40 nutrients, units, DVs, USDA id fallbacks
   - `nutrition/compare.ts` bases, best values, standouts; `similarity.ts` substitutes;
     `ranking.ts` best sources; `targets.ts` profile -> targets (DRIs); `recipe.ts`; `day.ts`
-  - `food/` groups, colors, allergen tags; `flavor/pairing.ts` aroma overlap; `flavor/tastes.ts`
+  - `food/` groups, colors, allergen tags, `custom.ts` (custom food form parsing, id range); `flavor/pairing.ts` aroma overlap; `flavor/tastes.ts`
     taste profiles + balancing rules (opposites)
 - `src/server/` (DB access): `db/` libSQL + Drizzle (USDA schema + user schema with migrations
-  in /drizzle, applied lazily by `ensureMigrated`), `foods.ts` search, `catalog.ts` all food
-  profiles in memory, `settings.ts`, `recipes.ts`, `days.ts` (entries, shopping), `backup.ts`,
+  in /drizzle, applied lazily by `ensureMigrated`), `foods.ts` search + portions, `catalog.ts` all
+  food profiles (USDA in memory, custom foods read fresh), `custom-foods.ts` (your own foods:
+  user table, ids above 900,000,000, merged into every food read), `settings.ts`, `recipes.ts`, `days.ts` (entries, shopping), `backup.ts`,
   `flavor.ts` (FlavorGraph queries), `flavor-graph.ts` (in-memory graph with variants folded:
   opposites, bridges, swaps, map). In-memory caches live on globalThis: restart the dev server
   after re-importing data or changing taste rules.

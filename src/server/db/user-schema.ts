@@ -83,3 +83,22 @@ export const shoppingChecks = sqliteTable(
   (t) => [primaryKey({ columns: [t.week, t.foodId] })]
 )
 
+
+/**
+ * Foods you add by hand (a brand of milk from your store). Ids start above CUSTOM_FOOD_BASE so
+ * they never clash with USDA FDC ids and work everywhere a food id does (entries, recipes,
+ * shopping). Kept here rather than in the USDA tables, which the import rebuilds.
+ */
+export const customFoods = sqliteTable("custom_foods", {
+  id: integer("id").primaryKey(),
+  name: text("name").notNull(),
+  brand: text("brand"),
+  /** A USDA food category name, for grouping and colors; null when none fits. */
+  category: text("category"),
+  /** Per 100 g, in the units of the nutrient catalog. Missing nutrients are absent, not zero. */
+  nutrients: text("nutrients", { mode: "json" }).$type<Partial<Record<string, number>>>().notNull(),
+  portions: text("portions", { mode: "json" }).$type<{ label: string; gramWeight: number }[]>().notNull(),
+  allergens: text("allergens", { mode: "json" }).$type<string[]>().notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
+  updatedAt: integer("updated_at", { mode: "timestamp" }).notNull(),
+})

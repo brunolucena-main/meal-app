@@ -1,8 +1,10 @@
+import { isCustomFoodId, matchesQuery } from "@/lib/food/custom"
 import type { FoodGroup } from "@/lib/food/types"
 import type { NutrientKey } from "@/lib/nutrition/nutrients"
+import { getCustomFoodRow, listCustomFoods, toFoodDetail } from "@/server/custom-foods"
 import { libsql } from "@/server/db/client"
 
-export type FoodSource = "foundation" | "sr_legacy"
+export type FoodSource = "foundation" | "sr_legacy" | "custom"
 
 export type FoodSummary = {
   id: number
@@ -41,6 +43,15 @@ function toSummary(r: Row): FoodSummary {
   }
 }
 
+/** Your own foods that match come first, then USDA's. */
+export async function searchFoods(query: string, limit = 40): Promise<FoodSummary[]> {
+  const [mine, usda] = await Promise.all([
+    listCustomFoods().then((foods) => foods.filter((f) => matchesQuery(f.description, query))),
+    searchUsdaFoods(query, limit),
+  ])
+  return [...mine, ...usda].slice(0, limit)
+}
+
 /**
  * Full-text search over USDA descriptions. Every word matches as a prefix ("spin" finds spinach).
  *
@@ -50,7 +61,7 @@ function toSummary(r: Row): FoodSummary {
  * not "Fish, milkfish"). Then raw over prepared, then names starting
  * with the word, then text relevance, then shorter names.
  */
-export async function searchFoods(query: string, limit = 40): Promise<FoodSummary[]> {
+async function searchUsdaFoods(query: string, limit: number): Promise<FoodSummary[]> {
   const words = query.toLowerCase().match(/[\p{L}\p{N}]+/gu) ?? []
   if (words.length === 0) return []
   const match = words.map((w) => `"${w}"*`).join(" ")
@@ -86,6 +97,10 @@ export async function searchFoods(query: string, limit = 40): Promise<FoodSummar
 }
 
 export async function getFood(id: number): Promise<FoodDetail | null> {
+  if (isCustomFoodId(id)) {
+    const row = await getCustomFoodRow(id)
+    return row ? toFoodDetail(row) : null
+  }
   const [food, nutrients, portions] = await libsql.batch(
     [
       { sql: "SELECT * FROM foods WHERE id = ?", args: [id] },
@@ -106,4 +121,25 @@ export async function getFood(id: number): Promise<FoodDetail | null> {
 export const SOURCE_LABELS: Record<FoodSource, string> = {
   foundation: "USDA Foundation",
   sr_legacy: "USDA SR Legacy",
+  custom: "My food",
+}
+
+/** Portions per food (USDA and your own), in display order. */
+export async function getPortions(foodIds: number[]): Promise<Map<number, FoodPortion[]>> {
+  const out = new Map<number, FoodPortion[]>()
+  const usda = foodIds.filter((id) => !isCustomFoodId(id))
+  if (usda.length < foodIds.length) {
+    for (const food of await listCustomFoods()) if (foodIds.includes(food.id)) out.set(food.id, food.portions)
+  }
+  if (!usda.length) return out
+  const result = await libsql.execute({
+    sql: `SELECT id, food_id, label, gram_weight FROM food_portions WHERE food_id IN (${usda.map(() => "?").join(",")}) ORDER BY seq, id`,
+    args: usda,
+  })
+  for (const r of result.rows) {
+    const list = out.get(Number(r.food_id)) ?? []
+    list.push({ id: Number(r.id), label: String(r.label), gramWeight: Number(r.gram_weight) })
+    out.set(Number(r.food_id), list)
+  }
+  return out
 }

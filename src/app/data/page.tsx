@@ -52,8 +52,9 @@ export default async function DataPage(props: PageProps<"/data">) {
         <h2 className="text-lg font-extrabold">{t("Download")}</h2>
         <p className="text-sm text-muted-foreground">
           {counts.profileSaved ? t("Your profile and targets,") : t("Your profile and targets (still the example profile),")}{" "}
-          {t("{recipes} recipes and meals, and {entries} planned or logged items over {days} days.", {
+          {t("{recipes} recipes and meals, {foods} foods of your own, and {entries} planned or logged items over {days} days.", {
             recipes: counts.recipes,
+            foods: counts.customFoods,
             entries: counts.entries,
             days: counts.days,
           })}{" "}

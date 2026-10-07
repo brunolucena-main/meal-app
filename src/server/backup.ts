@@ -1,18 +1,20 @@
 import { db, ensureMigrated } from "@/server/db/client"
-import { entries, recipeItems, recipes, settings, shoppingChecks } from "@/server/db/user-schema"
+import { customFoods, entries, recipeItems, recipes, settings, shoppingChecks } from "@/server/db/user-schema"
 
 /**
  * Backup of everything the user created (not the USDA or FlavorGraph reference data, which the
  * import scripts rebuild). Plain JSON, so it is easy to inspect and survives schema changes
  * that only add columns.
  */
-export const BACKUP_VERSION = 1
+/** 2 added custom foods; version 1 files still restore (with no custom foods). */
+export const BACKUP_VERSION = 2
 
 export type Backup = {
   app: "meal-app"
   version: number
   exportedAt: string
   settings: (typeof settings.$inferSelect)[]
+  customFoods: (typeof customFoods.$inferSelect)[]
   recipes: (typeof recipes.$inferSelect)[]
   recipeItems: (typeof recipeItems.$inferSelect)[]
   entries: (typeof entries.$inferSelect)[]
@@ -21,8 +23,9 @@ export type Backup = {
 
 export async function exportData(): Promise<Backup> {
   await ensureMigrated()
-  const [s, r, ri, e, sc] = await Promise.all([
+  const [s, cf, r, ri, e, sc] = await Promise.all([
     db.select().from(settings),
+    db.select().from(customFoods),
     db.select().from(recipes),
     db.select().from(recipeItems),
     db.select().from(entries),
@@ -33,6 +36,7 @@ export async function exportData(): Promise<Backup> {
     version: BACKUP_VERSION,
     exportedAt: new Date().toISOString(),
     settings: s,
+    customFoods: cf,
     recipes: r,
     recipeItems: ri,
     entries: e,
@@ -46,6 +50,7 @@ export async function dataCounts() {
     recipes: b.recipes.length,
     entries: b.entries.length,
     days: new Set(b.entries.map((e) => e.date)).size,
+    customFoods: b.customFoods.length,
     profileSaved: b.settings[0]?.profileSaved ?? false,
   }
 }
@@ -70,7 +75,11 @@ export async function importData(raw: unknown): Promise<void> {
     await tx.delete(recipeItems)
     await tx.delete(recipes)
     await tx.delete(settings)
+    await tx.delete(customFoods)
     for (const row of list(b.settings)) await tx.insert(settings).values({ ...row, updatedAt: toDate(row.updatedAt) })
+    for (const row of list(b.customFoods)) {
+      await tx.insert(customFoods).values({ ...row, createdAt: toDate(row.createdAt), updatedAt: toDate(row.updatedAt) })
+    }
     for (const row of list(b.recipes)) {
       await tx.insert(recipes).values({ ...row, createdAt: toDate(row.createdAt), updatedAt: toDate(row.updatedAt) })
     }

@@ -6,7 +6,7 @@ import { NUTRIENTS, type NutrientKey } from "@/lib/nutrition/nutrients"
 import { getCatalog } from "@/server/catalog"
 import { db, ensureMigrated, libsql } from "@/server/db/client"
 import { entries, shoppingChecks } from "@/server/db/user-schema"
-import type { FoodPortion } from "@/server/foods"
+import { getPortions, type FoodPortion } from "@/server/foods"
 import { listRecipes, type RecipeView } from "@/server/recipes"
 
 type Profile = Partial<Record<NutrientKey, number>>
@@ -235,18 +235,10 @@ export async function shoppingList(week: string): Promise<ShoppingItem[]> {
   if (!ids.length) return []
   const [catalog, portions, checks] = await Promise.all([
     getCatalog(),
-    libsql.execute({
-      sql: `SELECT id, food_id, label, gram_weight FROM food_portions WHERE food_id IN (${ids.map(() => "?").join(",")}) ORDER BY seq, id`,
-      args: ids,
-    }),
+    getPortions(ids),
     db.select().from(shoppingChecks).where(eq(shoppingChecks.week, week)),
   ])
   const byId = new Map(catalog.map((f) => [f.id, f]))
-  const firstPortion = new Map<number, FoodPortion>()
-  for (const p of portions.rows) {
-    const id = Number(p.food_id)
-    if (!firstPortion.has(id)) firstPortion.set(id, { id: Number(p.id), label: String(p.label), gramWeight: Number(p.gram_weight) })
-  }
   const checked = new Set(checks.map((c) => c.foodId))
   return ids
     .map((id) => {
@@ -259,7 +251,7 @@ export async function shoppingList(week: string): Promise<ShoppingItem[]> {
         category: food.category,
         allergens: food.allergens,
         grams: grams.get(id)!,
-        portion: firstPortion.get(id) ?? null,
+        portion: portions.get(id)?.[0] ?? null,
         checked: checked.has(id),
       }
     })
