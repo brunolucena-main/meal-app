@@ -6,7 +6,8 @@ in English or Spanish (switch at the bottom of the sidebar).
 - **Plan and log**: a Today screen, a week planner, a food log and a shopping list built from
   the plan.
 - **Know your food**: 8,000+ USDA foods with up to 40 nutrients each, compared side by side
-  per 100 g, per 100 kcal or per serving, against your own daily targets.
+  per 100 g, per 100 kcal or per serving, against your own daily targets. Add your own foods
+  (a brand you buy) from their nutrition label.
 - **Find better options**: nutritional substitutes ("like spinach, but more protein") and the
   best sources for whatever you're short on today.
 - **Cook creatively**: flavor pairings, taste opposites, bridges between ingredients and a

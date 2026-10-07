@@ -3,9 +3,9 @@ import { asc, count, desc, eq, inArray, max } from "drizzle-orm"
 import { per100g, perServing, recipeNutrition, type RecipeNutrition } from "@/lib/nutrition/recipe"
 import type { FoodGroup } from "@/lib/food/types"
 import { getCatalog, type CatalogFood } from "@/server/catalog"
-import { db, ensureMigrated, libsql } from "@/server/db/client"
+import { db, ensureMigrated } from "@/server/db/client"
 import { entries, recipeItems, recipes } from "@/server/db/user-schema"
-import type { FoodPortion } from "@/server/foods"
+import { getPortions, type FoodPortion } from "@/server/foods"
 
 export type RecipeKind = "recipe" | "meal"
 
@@ -77,21 +77,6 @@ async function catalogMap() {
   return new Map((await getCatalog()).map((f) => [f.id, f]))
 }
 
-async function portionsFor(foodIds: number[]): Promise<Map<number, FoodPortion[]>> {
-  const out = new Map<number, FoodPortion[]>()
-  if (!foodIds.length) return out
-  const result = await libsql.execute({
-    sql: `SELECT id, food_id, label, gram_weight FROM food_portions WHERE food_id IN (${foodIds.map(() => "?").join(",")}) ORDER BY seq, id`,
-    args: foodIds,
-  })
-  for (const r of result.rows) {
-    const list = out.get(Number(r.food_id)) ?? []
-    list.push({ id: Number(r.id), label: String(r.label), gramWeight: Number(r.gram_weight) })
-    out.set(Number(r.food_id), list)
-  }
-  return out
-}
-
 export async function listRecipes(): Promise<RecipeView[]> {
   await ensureMigrated()
   const rows = await db.select().from(recipes).orderBy(desc(recipes.updatedAt))
@@ -110,7 +95,7 @@ export async function getRecipe(id: number): Promise<RecipeView | null> {
   const row = (await db.select().from(recipes).where(eq(recipes.id, id)).limit(1))[0]
   if (!row) return null
   const items = await db.select().from(recipeItems).where(eq(recipeItems.recipeId, id)).orderBy(asc(recipeItems.position))
-  const [catalog, portions] = await Promise.all([catalogMap(), portionsFor([...new Set(items.map((i) => i.foodId))])])
+  const [catalog, portions] = await Promise.all([catalogMap(), getPortions([...new Set(items.map((i) => i.foodId))])])
   return build(row, items, catalog, portions)
 }
 

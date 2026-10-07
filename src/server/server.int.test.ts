@@ -21,6 +21,8 @@ type Modules = {
   recipes: typeof import("./recipes")
   backup: typeof import("./backup")
   foods: typeof import("./foods")
+  custom: typeof import("./custom-foods")
+  catalog: typeof import("./catalog")
 }
 let m: Modules
 
@@ -32,6 +34,8 @@ beforeAll(async () => {
     recipes: await import("./recipes"),
     backup: await import("./backup"),
     foods: await import("./foods"),
+    custom: await import("./custom-foods"),
+    catalog: await import("./catalog"),
   }
   // Start from empty user tables in the copy.
   await m.backup.importData({ app: "meal-app", version: 1, settings: [], recipes: [], recipeItems: [], entries: [], shoppingChecks: [] })
@@ -76,6 +80,33 @@ describe.skipIf(!hasDb)("database layer", () => {
     expect(list.find((i) => i.foodId === milk.id)?.grams).toBeCloseTo(125)
 
     expect((await m.recipes.deleteRecipe(id)).ok).toBe(false)
+  })
+
+  it("adds a custom food that works like a USDA one", async () => {
+    const id = await m.custom.createCustomFood({
+      name: "Semi-skimmed milk",
+      brand: "Hacendado",
+      category: "Dairy and Egg Products",
+      nutrients: { energy: 46, protein: 3.1, calcium: 120 },
+      portions: [{ label: "1 glass", gramWeight: 250 }],
+      allergens: [],
+    })
+    const [first] = await m.foods.searchFoods("milk")
+    expect(first.id).toBe(id)
+    expect(first.source).toBe("custom")
+    const food = (await m.foods.getFood(id))!
+    expect(food.description).toBe("Semi-skimmed milk (Hacendado)")
+    expect(food.group).toBe("dairy")
+    expect(food.nutrients.fat).toBeUndefined() // not on the label: no data, not zero
+    expect((await m.catalog.getCatalog()).some((f) => f.id === id)).toBe(true)
+
+    await m.days.addEntry({ date: "2030-02-04", slot: "breakfast", status: "planned", food: { id, grams: 250 } })
+    expect((await m.days.getDay("2030-02-04")).totals.planned.energy).toBeCloseTo(115)
+    const item = (await m.days.shoppingList("2030-02-04")).find((i) => i.foodId === id)
+    expect(item?.portion?.label).toBe("1 glass")
+
+    expect(await m.custom.deleteCustomFood(id)).toEqual({ ok: false, usedBy: 1 })
+    expect((await m.backup.exportData()).customFoods.map((f) => f.id)).toEqual([id])
   })
 
   it("round-trips a backup", async () => {

@@ -172,3 +172,13 @@ Work happens in sessions, split into ~15-minute chunks. Each chunk ends with a p
 - Spanish interface with an EN/ES switch; number and date formats follow the language. Food
   names stay in English (USDA and FlavorGraph data).
 
+### Custom foods
+- Add your own foods by hand (a brand of milk from your store): /foods/new, edit and delete
+  from the food page. Stored in a user table (`custom_foods`, migration 0003) so USDA
+  re-imports never touch them; ids start above 900,000,000, so they work anywhere a USDA id
+  does (search lists them first, recipes, days, shopping, compare, substitutes, best sources).
+- Form follows a nutrition label: values per 100 g or per serving (scaled to 100 g), salt and
+  sodium kept in sync (salt x 400 = sodium mg), comma decimals, blank = no data. Optional
+  portions ("1 glass" = 250 g). Hazelnut tag from a checkbox or the name.
+- Deleting is refused while the food is in a recipe or on a day. Included in backups (version 2;
+  version 1 files still restore).

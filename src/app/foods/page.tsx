@@ -1,9 +1,11 @@
-import { TriangleAlert } from "lucide-react"
+import { Plus, TriangleAlert } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
+import { buttonVariants } from "@/components/ui/button"
 import { formatAmount } from "@/lib/format"
+import { listCustomFoods } from "@/server/custom-foods"
 import { searchFoods, SOURCE_LABELS } from "@/server/foods"
 import { SearchBox } from "./search-box"
 import { getT } from "@/server/i18n"
@@ -19,18 +21,46 @@ export default async function FoodsPage(props: PageProps<"/foods">) {
   const t = await getT()
   const { q } = await props.searchParams
   const query = typeof q === "string" ? q : ""
-  const results = query ? await searchFoods(query) : []
+  const [results, mine] = await Promise.all([query ? searchFoods(query) : [], query ? [] : listCustomFoods()])
 
   return (
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <header className="grid gap-2">
-        <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Foods")}</h1>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Foods")}</h1>
+          <Link href="/foods/new" className={buttonVariants({ variant: "outline" })}>
+            <Plus aria-hidden />
+            {t("New food")}
+          </Link>
+        </div>
         <p className="text-muted-foreground">
-          {t("Generic foods from USDA FoodData Central, with up to 40 nutrients each. Values are per 100 g.")}
+          {t("Generic foods from USDA FoodData Central, with up to 40 nutrients each. Values are per 100 g.")}{" "}
+          {t("Missing something, like a brand you buy? Add it as a new food.")}
         </p>
       </header>
 
       <SearchBox initialQuery={query} />
+
+      {!query && mine.length ? (
+        <section aria-labelledby="mine-h" className="grid gap-2">
+          <h2 id="mine-h" className="text-sm font-bold">
+            {t("My foods")}
+          </h2>
+          <ul className="flex flex-wrap gap-2">
+            {mine.map((food) => (
+              <li key={food.id}>
+                <Link
+                  href={`/foods/${food.id}`}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-card py-1 pr-4 pl-1.5 text-sm font-semibold hover:bg-muted"
+                >
+                  <IngredientSwatch food={{ name: food.description, color: food.color, group: food.group }} className="size-6" />
+                  {food.description}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
 
       {!query ? (
         <div className="grid gap-3">

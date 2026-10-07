@@ -14,3 +14,5 @@ const RULES: Record<Allergen, RegExp> = {
 export function tagAllergens(description: string): Allergen[] {
   return (Object.keys(RULES) as Allergen[]).filter((a) => RULES[a].test(description))
 }
+
+export const ALLERGENS = Object.keys(RULES) as Allergen[]

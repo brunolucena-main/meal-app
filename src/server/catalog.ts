@@ -1,5 +1,6 @@
 import type { FoodGroup } from "@/lib/food/types"
 import type { NutrientKey } from "@/lib/nutrition/nutrients"
+import { listCustomFoods } from "@/server/custom-foods"
 import { libsql } from "@/server/db/client"
 import type { FoodSource } from "@/server/foods"
 
@@ -45,8 +46,25 @@ async function load(): Promise<CatalogFood[]> {
   return [...byId.values()]
 }
 
-/** Loaded once per server process (about 8,000 foods); re-run the import and restart to refresh. */
-export function getCatalog(): Promise<CatalogFood[]> {
+/**
+ * USDA foods are loaded once per server process (about 8,000 foods; re-run the import and
+ * restart to refresh). Your own foods are read fresh each time, so edits show up at once.
+ */
+export async function getCatalog(): Promise<CatalogFood[]> {
   cache.catalog ??= load()
-  return cache.catalog
+  const [usda, mine] = await Promise.all([cache.catalog, listCustomFoods()])
+  if (!mine.length) return usda
+  return [
+    ...usda,
+    ...mine.map((f) => ({
+      id: f.id,
+      description: f.description,
+      source: f.source,
+      category: f.category,
+      group: f.group,
+      color: f.color,
+      allergens: f.allergens,
+      profile: f.nutrients,
+    })),
+  ]
 }

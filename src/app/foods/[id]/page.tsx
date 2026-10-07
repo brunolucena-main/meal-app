@@ -1,4 +1,4 @@
-import { ArrowLeft, Columns3, ExternalLink, Replace, TriangleAlert } from "lucide-react"
+import { ArrowLeft, Columns3, ExternalLink, Pencil, Replace, TriangleAlert } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -71,15 +71,22 @@ export default async function FoodPage(props: PageProps<"/foods/[id]">) {
           <span aria-hidden>·</span>
           <span>{t(SOURCE_LABELS[food.source])}</span>
           <span aria-hidden>·</span>
-          <a
-            href={`https://fdc.nal.usda.gov/food-details/${food.id}/nutrients`}
-            target="_blank"
-            rel="noopener"
-            className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
-          >
-            FDC {food.id}
-            <ExternalLink className="size-3.5" aria-hidden />
-          </a>
+          {food.source === "custom" ? (
+            <Link href={`/foods/${food.id}/edit`} className="inline-flex items-center gap-1 font-semibold text-primary hover:underline">
+              <Pencil className="size-3.5" aria-hidden />
+              {t("Edit")}
+            </Link>
+          ) : (
+            <a
+              href={`https://fdc.nal.usda.gov/food-details/${food.id}/nutrients`}
+              target="_blank"
+              rel="noopener"
+              className="inline-flex items-center gap-1 font-semibold text-primary hover:underline"
+            >
+              FDC {food.id}
+              <ExternalLink className="size-3.5" aria-hidden />
+            </a>
+          )}
           <span aria-hidden>·</span>
           <span>
             {t("{n} of {total} nutrients reported", { n: food.nutrientCount, total: NUTRIENTS.length })}
