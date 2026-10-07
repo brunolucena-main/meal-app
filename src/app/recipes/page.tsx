@@ -31,13 +31,13 @@ export default async function RecipesPage() {
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="grid gap-2">
           <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Recipes")}</h1>
-          <p className="max-w-[60ch] text-muted-foreground">
+          <p className="max-w-[60ch] text-on-night-muted">
             {t("Recipes divide into servings. Reusable meals, like your usual breakfast, are eaten as one serving and drop straight into a day.")}
           </p>
         </div>
         <div className="flex gap-2">
           <form action={newRecipe.bind(null, "meal")}>
-            <Button type="submit" variant="outline">
+            <Button type="submit" variant="outline" className="text-foreground">
               <Utensils aria-hidden />
               {t("New meal")}
             </Button>

@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
 
+import { CookingBar } from "@/components/creative/cooking"
 import { FlavorHeader } from "@/components/creative/flavor-header"
 import { swatchStyle } from "@/components/food/ingredient-chip"
 import { listFlavorIngredients } from "@/server/flavor"
@@ -32,7 +33,8 @@ export default async function FlavorMapPage(props: PageProps<"/flavor-map">) {
     return (
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
         <header className="grid gap-2">
-          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Creative")}</p>
+          <CookingBar />
+          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Create")}</p>
           <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Flavor map")}</h1>
           <p className="max-w-[65ch] text-on-night-muted">
             {t("An ingredient's neighborhood: what recipes put next to it, and which of those also go together. Pick an ingredient to start, then click any neighbor to move to it.")}

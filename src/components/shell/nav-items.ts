@@ -29,15 +29,18 @@ export const navItems: NavItem[] = [
   { href: "/plan", label: "Plan", icon: CalendarDays },
   { href: "/shopping", label: "Shopping", icon: ShoppingBasket },
   { href: "/log", label: "Log", icon: NotebookPen },
-  { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/foods", label: "Foods", icon: Apple },
   { href: "/compare", label: "Compare", icon: Columns3 },
   { href: "/best", label: "Best sources", icon: Medal },
   { href: "/targets", label: "Targets", icon: Target },
 ]
 
-/** Creative section: lives in the purple block of the sidebar. */
+/**
+ * Create section, in the purple block of the sidebar: recipes, where you cook, and the flavor
+ * pages that feed them (opened from a recipe's flavor guide, they can add to it).
+ */
 export const creativeItems: NavItem[] = [
+  { href: "/recipes", label: "Recipes", icon: ChefHat },
   { href: "/pairings", label: "Pairings", icon: Grape },
   { href: "/opposites", label: "Opposites", icon: Contrast },
   { href: "/bridges", label: "Bridges", icon: Waypoints },

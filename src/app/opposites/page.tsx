@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
 import Link from "next/link"
 
+import { AddToCooking, CookingBar } from "@/components/creative/cooking"
 import { FlavorHeader } from "@/components/creative/flavor-header"
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { TASTE_LABELS } from "@/lib/flavor/tastes"
@@ -32,7 +33,8 @@ export default async function OppositesPage(props: PageProps<"/opposites">) {
     return (
       <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
         <header className="grid gap-2">
-          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Creative")}</p>
+          <CookingBar />
+          <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Create")}</p>
           <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Opposites")}</h1>
           <p className="max-w-[65ch] text-on-night-muted">
             {t("Contrasting tastes that balance each other: acid against richness, salt or sweetness against bitterness, sweet against sour. Pick an ingredient.")}
@@ -67,7 +69,7 @@ export default async function OppositesPage(props: PageProps<"/opposites">) {
         ) : (
           <ul className="grid">
             {shown.map((o) => (
-              <li key={o.ingredient.id} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 border-t border-border py-2.5">
+              <li key={o.ingredient.id} className="grid grid-cols-[minmax(0,1fr)_auto_auto] items-center gap-3 border-t border-border py-2.5">
                 <span className="grid min-w-0 gap-1">
                   <Link href={`/opposites?i=${o.ingredient.id}`} className="justify-self-start rounded-full focus-visible:outline-2 focus-visible:outline-ring">
                     <IngredientChip food={{ name: o.ingredient.name, color: o.ingredient.color, group: o.ingredient.group }} size="sm" className="hover:bg-muted" />
@@ -82,6 +84,7 @@ export default async function OppositesPage(props: PageProps<"/opposites">) {
                   </span>
                   <span className="text-[11px] font-semibold text-muted-foreground">{t(o.contrast.reason)}</span>
                 </span>
+                <AddToCooking foodId={o.ingredient.foodId} name={o.ingredient.name} />
               </li>
             ))}
           </ul>

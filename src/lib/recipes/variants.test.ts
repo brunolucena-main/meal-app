@@ -35,7 +35,8 @@ describe("groupFamilies", () => {
 describe("shortFoodName", () => {
   it("keeps the food, drops the details", () => {
     expect(shortFoodName("Blueberries, raw")).toBe("Blueberries")
-    expect(shortFoodName("Fish, tuna, light, canned in water, drained solids")).toBe("Tuna")
+    expect(shortFoodName("Fish, tuna, light, canned in water, drained solids")).toBe("Fish, tuna")
+    expect(shortFoodName("Yogurt, Greek, plain, nonfat")).toBe("Yogurt, Greek")
     expect(shortFoodName("Lomitos de atún al natural (Día)")).toBe("Lomitos de atún al natural (Día)")
   })
 })

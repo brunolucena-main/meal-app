@@ -2,6 +2,7 @@ import { ArrowRight } from "lucide-react"
 import type { Metadata } from "next"
 import Link from "next/link"
 
+import { AddToCooking, CookingBar } from "@/components/creative/cooking"
 import { IngredientChip } from "@/components/food/ingredient-chip"
 import { getFlavorIngredient, listFlavorIngredients } from "@/server/flavor"
 import { bridges } from "@/server/flavor-graph"
@@ -37,7 +38,8 @@ export default async function BridgesPage(props: PageProps<"/bridges">) {
   return (
     <div className="mx-auto grid max-w-5xl gap-6 px-4 py-8 md:px-10 md:py-12">
       <header className="grid gap-2">
-        <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Creative")}</p>
+        <CookingBar />
+        <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t("Create")}</p>
         <h1 className="text-3xl font-extrabold tracking-tight md:text-4xl">{t("Bridges")}</h1>
         <p className="max-w-[65ch] text-on-night-muted">
           {t("Two ingredients that rarely meet can still share a dish. A bridge is an ingredient that recipes often combine with both.")}
@@ -99,6 +101,7 @@ export default async function BridgesPage(props: PageProps<"/bridges">) {
                       <Link href={`/pairings?i=${n.id}`} className="rounded-full bg-violet-soft p-0.5">
                         <IngredientChip food={chip(n)} size="sm" className="border-transparent" />
                       </Link>
+                      <AddToCooking foodId={n.foodId} name={n.name} />
                     </span>
                   ))}
                   <span className="text-[11px] font-bold text-muted-foreground tabular-nums">{Math.round(x.links[x.links.length - 1] * 100)}</span>

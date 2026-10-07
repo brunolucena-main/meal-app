@@ -56,7 +56,8 @@ const TAGS = Object.fromEntries(
 /** Tastes from name tags and, when known, USDA nutrients per 100 g. */
 export function tasteProfile(slug: string, per100g?: Partial<Record<NutrientKey, number>>): TasteProfile {
   const p: TasteProfile = {}
-  const name = slug.replace(/_/g, " ").toLowerCase()
+  // "Lemon juice, raw" and "lemon_juice" both become "lemon juice raw".
+  const name = slug.toLowerCase().replace(/[^\p{L}]+/gu, " ").trim()
   for (const [taste, rules] of Object.entries(TAGS) as [keyof typeof TAGS, [RegExp, 1 | 2][]][]) {
     for (const [pattern, strength] of rules) {
       if (pattern.test(name)) {
@@ -111,4 +112,41 @@ export function contrast(mine: TasteProfile, theirs: TasteProfile): Contrast | n
     if (!best || score > best.score) best = { score, reason, mine: a, theirs: b }
   }
   return best
+}
+
+/**
+ * Tastes of a whole dish: sweet, salty and rich from the dish's nutrients per 100 g; sour,
+ * bitter, savory and hot from its ingredients' names. A dominant tag (lemon, chili) counts in
+ * any amount; a mild one (yogurt, spinach) only when the ingredient is at least 5% of the dish.
+ */
+export function dishTasteProfile(items: { name: string; grams: number }[], per100g: Partial<Record<NutrientKey, number>>): TasteProfile {
+  const p = tasteProfile("", per100g)
+  const total = items.reduce((sum, i) => sum + i.grams, 0)
+  for (const item of items) {
+    const tags = tasteProfile(item.name)
+    for (const taste of ["sour", "bitter", "umami", "spicy"] as const) {
+      const strength = tags[taste]
+      if (!strength || (strength === 1 && item.grams < total * 0.05)) continue
+      p[taste] = Math.max(p[taste] ?? 0, strength) as 1 | 2
+    }
+  }
+  return p
+}
+
+export type BalanceGap = { mine: Taste; theirs: Taste; reason: string; strength: 1 | 2 }
+
+/**
+ * Contrasts a dish is missing: tastes it has with no balancing taste yet ("rich, nothing sour"),
+ * strongest first, one per missing taste.
+ */
+export function balanceGaps(dish: TasteProfile): BalanceGap[] {
+  const gaps: BalanceGap[] = []
+  for (const [a, b, reason] of RULES) {
+    const strength = dish[a]
+    if (!strength || dish[b]) continue
+    gaps.push({ mine: a, theirs: b, reason, strength })
+  }
+  gaps.sort((x, y) => y.strength - x.strength)
+  const seen = new Set<Taste>()
+  return gaps.filter((g) => (seen.has(g.theirs) ? false : (seen.add(g.theirs), true)))
 }

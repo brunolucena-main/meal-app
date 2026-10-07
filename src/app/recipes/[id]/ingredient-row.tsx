@@ -5,8 +5,9 @@ import Link from "next/link"
 import { useState, useTransition } from "react"
 
 import { FoodPicker } from "@/components/food/food-picker"
-import { IngredientSwatch } from "@/components/food/ingredient-chip"
+import { IngredientChip, IngredientSwatch } from "@/components/food/ingredient-chip"
 import { formatAmount } from "@/lib/format"
+import type { GuideChip } from "@/server/flavor-guide"
 import type { RecipeItemView } from "@/server/recipes"
 import { removeIngredient, replaceIngredient, setIngredientGrams } from "../actions"
 import { useT } from "@/components/i18n-provider"
@@ -16,10 +17,13 @@ export function IngredientRow({
   recipeId,
   item,
   flagged,
+  swapIdeas,
 }: {
   recipeId: number
   item: RecipeItemView
   flagged: boolean
+  /** Flavor guide stand-ins: used with the same partners in recipes. */
+  swapIdeas: GuideChip[]
 }) {
   const t = useT()
   const [grams, setGrams] = useState(String(item.grams))
@@ -107,7 +111,25 @@ export function IngredientRow({
         </button>
       </span>
       {replacing ? (
-        <div className="col-span-3 grid gap-1 pl-10">
+        <div className="col-span-3 grid gap-2 pl-10">
+          {swapIdeas.length ? (
+            <span className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold text-muted-foreground">{t("Swap ideas")}</span>
+              {swapIdeas.map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    setReplacing(false)
+                    startTransition(() => replaceIngredient(recipeId, item.id, s.foodId))
+                  }}
+                  className="rounded-full focus-visible:outline-2 focus-visible:outline-ring"
+                >
+                  <IngredientChip food={s} size="sm" className="hover:bg-muted" />
+                </button>
+              ))}
+            </span>
+          ) : null}
           <FoodPicker
             id={`replace-${item.id}`}
             label={t("Replace {name} with", { name: item.name })}

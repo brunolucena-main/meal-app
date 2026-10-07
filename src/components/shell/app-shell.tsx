@@ -142,7 +142,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               id="creative-nav-h"
               className="px-3 pb-1 text-[11px] font-bold tracking-[0.12em] text-creative-muted uppercase"
             >
-              {t("Creative")}
+              {t("Create")}
             </span>
             {creativeItems.map((item) => (
               <NavLink key={item.href} item={item} active={isActive(item.href)} tone="creative" />

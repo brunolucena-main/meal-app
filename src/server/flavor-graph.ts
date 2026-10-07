@@ -75,11 +75,13 @@ export function getFlavorGraph(): Promise<Graph> {
   return cache.flavorGraph
 }
 
-type Node = FlavorIngredient & { tastes: TasteProfile }
+export type Node = FlavorIngredient & { tastes: TasteProfile }
 
 /** Not ingredients you'd pair: leavening, ready-made dishes. */
 const NOT_FOR_PAIRING = new Set(["ETC", "Dish/End Product"])
 const NOT_FOR_PAIRING_NAMES = /baking soda|baking powder|yeast|cream of tartar|gelatin|corn ?starch|food coloring|water/i
+
+export const pairable = (i: FlavorIngredient) => !NOT_FOR_PAIRING.has(i.category ?? "") && !NOT_FOR_PAIRING_NAMES.test(i.name)
 
 export type Opposite = { ingredient: Node; contrast: Contrast; together: number | null; score: number }
 
@@ -91,7 +93,7 @@ export async function opposites(id: number, limit = 15): Promise<{ self: Node; l
   const mine = g.together.get(id) ?? new Map()
   const list: Opposite[] = []
   for (const other of g.ingredients.values()) {
-    if (other.id === id || NOT_FOR_PAIRING.has(other.category ?? "") || NOT_FOR_PAIRING_NAMES.test(other.name)) continue
+    if (other.id === id || !pairable(other)) continue
     const c = contrast(self.tastes, other.tastes)
     if (!c) continue
     const t = mine.get(other.id) ?? null

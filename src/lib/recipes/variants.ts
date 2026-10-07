@@ -57,9 +57,8 @@ export function groupFamilies<R extends { id: number; parentId: number | null }>
   return [...families.values()].flatMap((list) => list.sort((x, y) => (x.parentId === null ? -1 : y.parentId === null ? 1 : x.id - y.id)))
 }
 
-/** "Blueberries, raw" -> "Blueberries"; "Fish, tuna, light, canned" -> "Tuna". For compact lists. */
+/** "Blueberries, raw" -> "Blueberries"; "Fish, tuna, light, canned" -> "Fish, tuna". For compact lists. */
 export function shortFoodName(description: string) {
   const parts = description.split(",").map((s) => s.trim())
-  if (parts[1] && variantKey(description).includes(", ")) return parts[1].charAt(0).toUpperCase() + parts[1].slice(1)
-  return parts[0]
+  return variantKey(description).includes(", ") ? parts.slice(0, 2).join(", ") : parts[0]
 }

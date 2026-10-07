@@ -10,10 +10,12 @@ import type { NutrientKey } from "@/lib/nutrition/nutrients"
 import type { T } from "@/lib/i18n"
 import { familyId, groupFamilies, ingredientDiff, shortFoodName } from "@/lib/recipes/variants"
 import { cn } from "@/lib/utils"
+import { flavorGuide } from "@/server/flavor-guide"
 import { getRecipe, listRecipes, type RecipeView } from "@/server/recipes"
 import { getSettings } from "@/server/settings"
 import { makeVariant, removeRecipe, saveRecipeDetails } from "../actions"
 import { AddIngredient } from "./add-ingredient"
+import { FlavorGuide } from "./flavor-guide"
 import { IngredientRow } from "./ingredient-row"
 import { getT } from "@/server/i18n"
 
@@ -42,6 +44,7 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
   const t = await getT()
   const [recipe, settings, search, all] = await Promise.all([load(props), getSettings(), props.searchParams, listRecipes()])
   const family = groupFamilies(all.filter((r) => familyId(r) === familyId(recipe)))
+  const guide = await flavorGuide(recipe, settings)
   const inUse = Number(Array.isArray(search.inUse) ? search.inUse[0] : search.inUse) || 0
   const serving = recipe.kind === "meal" ? t("Per the meal") : t("Per one serving")
   const partialCount = Object.keys(recipe.nutrition.partial).length
@@ -49,7 +52,7 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
 
   return (
     <div className="mx-auto grid max-w-6xl gap-6 px-4 py-8 md:px-10 md:py-12">
-      <Link href="/recipes" className="inline-flex items-center gap-1.5 justify-self-start text-sm font-semibold text-muted-foreground hover:text-foreground">
+      <Link href="/recipes" className="inline-flex items-center gap-1.5 justify-self-start text-sm font-semibold text-on-night-muted hover:text-on-night">
         <ArrowLeft className="size-4" aria-hidden />
         {t("Recipes")}
       </Link>
@@ -110,6 +113,7 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
                     recipeId={recipe.id}
                     item={item}
                     flagged={item.allergens.some((a) => settings.allergies.includes(a))}
+                    swapIdeas={guide?.swapIdeas[item.foodId] ?? []}
                   />
                 ))}
               </ul>
@@ -122,6 +126,8 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
             </p>
           </section>
 
+          <FlavorGuide recipe={recipe} guide={guide} t={t} />
+
           <Variants recipe={recipe} family={family} t={t} />
 
           {inUse > 0 ? (
@@ -130,7 +136,7 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
             </p>
           ) : null}
           <form action={removeRecipe.bind(null, recipe.id)}>
-            <Button type="submit" variant="destructive">
+            <Button type="submit" variant="outline" className="text-destructive hover:text-destructive">
               <Trash2 aria-hidden />
               {recipe.kind === "meal" ? t("Delete meal") : t("Delete recipe")}
             </Button>
@@ -138,7 +144,7 @@ export default async function RecipePage(props: PageProps<"/recipes/[id]">) {
         </div>
 
         <section aria-label={t("Nutrition")} className="grid content-start gap-4">
-          <div className="grid gap-3 rounded-3xl bg-tint-1 p-5">
+          <div className="grid gap-3 rounded-3xl bg-tint-1 p-5 text-foreground">
             <h2 className="text-lg font-extrabold">{serving}</h2>
             <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
               {headline.map((h) => (

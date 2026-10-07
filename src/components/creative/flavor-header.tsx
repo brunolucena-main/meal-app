@@ -1,6 +1,7 @@
 import { ExternalLink } from "lucide-react"
 import Link from "next/link"
 
+import { AddToCooking, CookingBar } from "@/components/creative/cooking"
 import { IngredientSwatch } from "@/components/food/ingredient-chip"
 import { TASTE_LABELS, type Taste, type TasteProfile } from "@/lib/flavor/tastes"
 import { cn } from "@/lib/utils"
@@ -30,6 +31,7 @@ export async function FlavorHeader({
   const tasteList = tastes ? (Object.entries(tastes) as [Taste, 1 | 2][]) : []
   return (
     <header className="grid gap-3">
+      <CookingBar />
       <p className="text-xs font-bold tracking-[0.12em] text-on-night-muted uppercase">{t(section)}</p>
       <h1 className="flex items-center gap-3 text-4xl font-extrabold tracking-tight">
         <IngredientSwatch
@@ -37,6 +39,7 @@ export async function FlavorHeader({
           className="size-10 rounded-[14px_14px_14px_4px]"
         />
         {ingredient.name}
+        <AddToCooking foodId={ingredient.foodId} name={ingredient.name} />
       </h1>
       <div className="flex flex-wrap items-center gap-2 text-sm font-medium text-on-night-muted">
         {ingredient.category ? <span>{t(ingredient.category)}</span> : null}
